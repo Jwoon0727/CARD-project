@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet 폴리곤 예시</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    #map {
+      width: 100%;
+      height: 300px;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-label {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    var mapContainer = document.getElementById('map');
+    var map = L.map(mapContainer).setView([36.8278739, 127.1247844], 17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // 폴리곤의 좌표 배열
+    var polygonCoords = [
+      [36.8290861, 127.1228959],
+      [36.8267363, 127.1229915],
+      [36.8265895, 127.1272894],
+      [36.8274512, 127.1272824],
+      [36.8274402, 127.1267040],
+      [36.8282885, 127.1266795],
+      [36.8289798, 127.1260958]
+      
+    ];
+    // 폴리곤 생성
+    var polygon = L.polygon(polygonCoords, {
+      color: 'red',
+      fillColor: 'NONE',
+      fillOpacity: 5,
+      weight: 5
+    }).addTo(map);
+  </script>
+
+<div class="checkbox-container">
+  <input type="checkbox" id="checkbox" name="checkbox">
+  <label class="checkbox-label" for="checkbox">체크박스</label>
+</div>
+
+</body>
+</html>
+
+
+
