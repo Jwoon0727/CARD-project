@@ -1,6 +1,10 @@
 # 패키지 불러오기
 from selenium import webdriver
 import pandas as pd
+import csv
+
+
+
 
 driver = webdriver.Chrome()
 
@@ -51,23 +55,19 @@ while 1:
             continue
 
         # 더이상 이동할수 없을 경우 종료
-        else:
-            break
+        
   
    
 
 # list1를 DataFrame으로 변환
 df = pd.DataFrame(list1)
-
-# 데이터를 출력
-print(df)
-
-# 데이터를 CSV 파일로 저장
+# Using pandas to write to a CSV file
 df.to_csv('output.csv', index=False)
-
-import os
-
-# 현재 작업 디렉토리 출력
-print(os.getcwd())
-
+# Using the csv module to write to a CSV file
+with open('output.csv', 'w', encoding='utf-8', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(list1)
+    
+    f.close()
+print(df)
 
