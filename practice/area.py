@@ -5,8 +5,8 @@ import csv
 kakao_api_key = '07143ce4b1f0455f37c8685c50a101f0'
 
 # 좌표 지정 (위도, 경도)
-latitude = '37.5665'
-longitude = '126.9780'
+latitude = '127.1231326'
+longitude = '36.8281967'  
 
 # API 호출
 url = f'https://dapi.kakao.com/v2/local/search/category.json?category_group_code=PO3&x={longitude}&y={latitude}&radius=500'
@@ -40,3 +40,7 @@ if response.status_code == 200:
     print('데이터를 places_data.csv 파일에 저장했습니다.')
 else:
     print(f'Error: {response.status_code}')
+    
+   
+   
+# 이코드는 좌표를 지정해 좌표안에 있는 원하는 모든 데이터들을 추출하는 프로그램이다. 아웃풋은 csv파일임
