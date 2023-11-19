@@ -1,46 +1,102 @@
-import requests
-import csv
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>카카오맵 예제</title>
+    <link rel="stylesheet" href="center.css">
+</head>
+<body>
+    <div id="map" style="width:100%; height:400px;"></div>
+    <p>구역카드</p>
 
-# 카카오 개발자 포털에서 발급받은 API 키를 입력하세요.
-kakao_api_key = '07143ce4b1f0455f37c8685c50a101f0'
-
-# 좌표 지정 (위도, 경도)
-latitude = '127.1231326'
-longitude = '36.8281967'  
-
-# API 호출
-url = f'https://dapi.kakao.com/v2/local/search/category.json?category_group_code=PO3&x={longitude}&y={latitude}&radius=500'
-headers = {'Authorization': f'KakaoAK {kakao_api_key}'}
-response = requests.get(url, headers=headers)
-
-# 응답 확인
-print(f'Status Code: {response.status_code}')
-
-if response.status_code == 200:
-    result = response.json()
-    places = result.get('documents', [])
-
-    for place in places:
-        name = place.get('place_name', '')
-        address = place.get('address_name', '')
-        print(f'업체명: {name}, 주소: {address}')
-
-    # CSV 파일 작성
-    with open('places_data.csv', 'w', encoding='utf-8', newline='') as csvfile:
-        fieldnames = ['업체명', '주소']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-
-        for place in places:
-            name = place.get('place_name', '')
-            address = place.get('address_name', '')
-            writer.writerow({'업체명': name, '주소': address})
-
-    print('데이터를 places_data.csv 파일에 저장했습니다.')
-else:
-    print(f'Error: {response.status_code}')
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d748997195923dbf828740f15b568099"></script>
+    <script type="text/javascript" src="polygon.js"></script>
+    <script type="text/javascript" src="custom_overay.js"></script>
     
-   
-   
-# 이코드는 좌표를 지정해 좌표안에 있는 원하는 모든 데이터들을 추출하는 프로그램이다. 아웃풋은 csv파일임
+    <!-- <script>
+        // 카카오맵 API 로드 완료 후 실행될 콜백 함수
+        kakao.maps.load(() => {
+            const container = document.getElementById('map');
+            const options = {
+                center: new kakao.maps.LatLng(36.8394233, 127.1426544), // 지도 중심 좌표
+                level: 5 // 지도 확대 레벨
+            };
+            const map = new kakao.maps.Map(container, options);
+
+            // 다각형 추가 함수 호출
+            addPolygon(map);
+        });
+    </script> -->
+</body>
+</html>
+
+
+
+================================================================
+
+
+
+// polygon.js 파일
+
+function addPolygon(map, coordinates) {
+    // 다각형 생성
+    const polygon = new kakao.maps.Polygon({
+        map: map,
+        path: coordinates,
+        strokeWeight: 3,
+        strokeColor: "red",
+        strokeOpacity: 1,
+        fillColor: 'none',
+        fillOpacity: 0.5
+    });
+
+    // 주석 처리한 경우, 다각형이 생성되고 바로 지도에 추가됩니다.
+    // polygon.setMap(map);
+}
+
+// 카카오맵 API 로드 완료 후 실행될 콜백 함수
+kakao.maps.load(() => {
+    const container = document.getElementById('map');
+    const options = {
+        center: new kakao.maps.LatLng(36.8394233, 127.1426544),
+        level: 5
+    };
+    const map = new kakao.maps.Map(container, options);
+
+    // 다각형1 왕국회관
+    addPolygon(map, [
+        new kakao.maps.LatLng(36.8393801, 127.1429119),
+        new kakao.maps.LatLng(36.8395513, 127.1429237),
+        new kakao.maps.LatLng(36.8395776, 127.1426876),
+        new kakao.maps.LatLng(36.8396713, 127.1426792),
+        new kakao.maps.LatLng(36.8396734, 127.1424610),
+        new kakao.maps.LatLng(36.8393855, 127.1424345),
+    ]);
+
+    // 다각형2 센트하임프라자
+    addPolygon(map, [
+        new kakao.maps.LatLng(36.8325678, 127.1473493),
+        new kakao.maps.LatLng(36.8322943, 127.1472997),
+        new kakao.maps.LatLng(36.8321899, 127.1485654),
+        new kakao.maps.LatLng(36.8323080, 127.1485778),
+        new kakao.maps.LatLng(36.8325369, 127.1486056),
+        new kakao.maps.LatLng(36.8325862, 127.1483129),
+        new kakao.maps.LatLng(36.8324712, 127.1482857),
+    ]);
+    //다각형3 환서중학교 구역번호 222번 
+    addPolygon(map, [
+        new kakao.maps.LatLng(36.8267494, 127.1229627),
+        new kakao.maps.LatLng(36.8266042, 127.1272713),
+        new kakao.maps.LatLng(36.8274440, 127.1272810),
+        new kakao.maps.LatLng(36.8274284, 127.1266839),
+        new kakao.maps.LatLng(36.8282982, 127.1266872),
+        new kakao.maps.LatLng(36.8287799, 127.1261672),
+        new kakao.maps.LatLng(36.8289683, 127.1261092),
+        new kakao.maps.LatLng(36.8290627, 127.1235641),
+        new kakao.maps.LatLng(36.8290625, 127.1229151),
+    ]);
+});
+
+
+
+

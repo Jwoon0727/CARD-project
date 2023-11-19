@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>카카오맵 예제</title>
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d748997195923dbf828740f15b568099"></script>
+    <link rel="stylesheet" type="text/css" href="center.css">
+    <style>
+        /* 내부 스타일을 이곳에 직접 추가합니다. */
+        .custom-marker {
+            width: 32px;
+            height: 32px;
+            background-color: red;
+            border-radius: 50%;
+            /* 추가적인 스타일을 여기에 계속해서 추가할 수 있습니다. */
+        }
+    </style>
 </head>
 <body>
     <div id="map" style="width:100%; height:400px;"></div>
     <p>구역카드</p>
 
-    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d748997195923dbf828740f15b568099"></script>
+   
     <script type="text/javascript" src="polygon.js"></script>
     
-    <!-- <script>
-        // 카카오맵 API 로드 완료 후 실행될 콜백 함수
-        kakao.maps.load(() => {
-            const container = document.getElementById('map');
-            const options = {
-                center: new kakao.maps.LatLng(36.8394233, 127.1426544), // 지도 중심 좌표
-                level: 5 // 지도 확대 레벨
-            };
-            const map = new kakao.maps.Map(container, options);
-
-            // 다각형 추가 함수 호출
-            addPolygon(map);
-        });
-    </script> -->
 </body>
 </html>
