@@ -1,7 +1,8 @@
 @charset "utf-8";
 
 
-.polygon {
+
+
 .wrap {
   position: absolute;
   left: 0;
@@ -94,4 +95,5 @@
 .info .link {
   color: #5085bb;
 }
-}
+
+
