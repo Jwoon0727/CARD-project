@@ -1,11 +1,11 @@
 
-var globalMap; 
+// polygon.js 파일
+var globalMap;
 
-function addPolygon(map, coordinates, overlayContent) {
-    
+function addPolygon(map, coordinates) {
     // 다각형 생성
     const polygon = new kakao.maps.Polygon({
-        map: globalMap,
+        map: map, // 수정: map 변수를 사용
         path: coordinates,
         strokeWeight: 3,
         strokeColor: "red",
@@ -13,15 +13,13 @@ function addPolygon(map, coordinates, overlayContent) {
         fillColor: 'none',
         fillOpacity: 0.5,
     });
-
-  
 }
 
 // 카카오맵 API 로드 완료 후 실행될 콜백 함수
 kakao.maps.load(() => {
     const container = document.getElementById('map');
     const options = {
-        center: new kakao.maps.LatLng(36.8394233, 127.1426544),
+        center: new kakao.maps.LatLng(36.832365, 127.148021),
         level: 5
     };
     // 전역으로 사용할 지도 객체에 할당
@@ -35,7 +33,7 @@ kakao.maps.load(() => {
         new kakao.maps.LatLng(36.8396713, 127.1426792),
         new kakao.maps.LatLng(36.8396734, 127.1424610),
         new kakao.maps.LatLng(36.8393855, 127.1424345),
-    ], createOverlayContent('다각형1 정보'));
+    ]);
 
     // 다각형2 생성 및 지도에 추가
     addPolygon(globalMap, [
@@ -46,9 +44,9 @@ kakao.maps.load(() => {
         new kakao.maps.LatLng(36.8325369, 127.1486056),
         new kakao.maps.LatLng(36.8325862, 127.1483129),
         new kakao.maps.LatLng(36.8324712, 127.1482857),
-    ], createOverlayContent('다각형2 정보'));
+    ]);
 
-    //다각형3 생성 및 지도에 추가
+    // 다각형3 생성 및 지도에 추가
     addPolygon(globalMap, [
         new kakao.maps.LatLng(36.8267494, 127.1229627),
         new kakao.maps.LatLng(36.8266042, 127.1272713),
@@ -59,9 +57,5 @@ kakao.maps.load(() => {
         new kakao.maps.LatLng(36.8289683, 127.1261092),
         new kakao.maps.LatLng(36.8290627, 127.1235641),
         new kakao.maps.LatLng(36.8290625, 127.1229151),
-    ], createOverlayContent('다각형3 정보'));
-
-
-
+    ]);
 });
-
