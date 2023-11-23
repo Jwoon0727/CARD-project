@@ -1,108 +1,339 @@
-// custom_overlay.js 파일
-kakao.maps.load(() => {
-    // polygon.js에서 정의한 전역 지도 객체를 가져와 할당
-    const map = getGlobalMap();
 
-    const container = document.getElementById('map');
-    const options = {
-        center: new kakao.maps.LatLng(36.832365, 127.148021),
-        level: 5
-    };
 
-    // 이미 존재하는 전역 지도 객체를 사용
-    const mapToUse = map;
-
-    // 마커를 표시할 좌표입니다
-    const markerPosition = new kakao.maps.LatLng(36.832365, 127.148021);
-
-    // 마커를 생성합니다
+// 마커를 추가하는 함수
+function addMarker(map, position) {
+    // 마커 생성
     const marker = new kakao.maps.Marker({
-        position: markerPosition
+        position: position,
+        map: map,
+        title: '마커 제목'
     });
+}
 
-    // 마커를 지도에 표시합니다.
-    marker.setMap(mapToUse);
-
-    // 커스텀 오버레이에 표시할 컨텐츠입니다
-    const content = '<div class="wrap">' +
-       
-
-    // 마커 위에 커스텀오버레이를 표시합니다
-    
-    // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
-    kakao.maps.event.addListener(marker, 'click', function () {
-        customOverlay.setMap(mapToUse);
-    });
-
-    // 커스텀 오버레이를 닫기 위해 호출되는 함수입니다
-    function closeOverlay() {
-        customOverlay.setMap(null);
-    }
+// 폴리곤 파일의 전역 변수인 globalMap을 사용하여 마커를 추가
+// 여기서는 폴리곤 파일의 globalMap을 사용하기 위해 폴리곤 파일이 먼저 로드되어야 함
+kakao.maps.load(() => {
+    // 폴리곤 파일에서 생성한 전역 지도 객체(globalMap)를 사용하여 마커 추가
+    addMarker(globalMap, new kakao.maps.LatLng(36.832408, 127.147905));
+    addMarker(globalMap, new kakao.maps.LatLng(36.828, 127.125));
+    // 원하는 만큼 마커를 추가할 수 있음
 });
 
+
+=================================
+
+
+// 마커를 추가하는 함수
+function addMarker(map, position) {
+    // 마커 생성
+    const marker = new kakao.maps.Marker({
+        position: position,
+        map: map,
+        title: '마커 제목'
+    });
+
+    // 커스텀 오버레이를 생성하고 설정
+    const content = '<div class="wrap">' + 
+    '    <div class="info">' + 
+    '        <div class="title">' + 
+    '            ' + info.title + 
+    '            <div class="close" onclick="closeOverlay()" title="' + info.closeTitle + '"></div>' + 
+    '        </div>' + 
+    '        <div class="body">' + 
+    '            <div class="img">' +
+    '                <img src="' + info.imgSrc + '" width="73" height="70">' +
+    '           </div>' + 
+    '            <div class="desc">' + 
+    '                <div class="ellipsis">' + info.address + '</div>' + 
+    '                <div class="jibun ellipsis">' + info.postalCode + '</div>' + 
+    '                <div><a href="' + info.homepage + '" target="_blank" class="link">홈페이지</a></div>' + 
+    '            </div>' + 
+    '        </div>' + 
+    '    </div>' +    
+    '</div>';
+    const overlay = new kakao.maps.CustomOverlay({
+        content: content,
+        map: map,
+        position: marker.getPosition(),
+        clickable: false
+    });
+    
+    // 처음에는 오버레이를 숨기기
+    overlay.setMap(null);
+
+    // 마커를 클릭하면 커스텀 오버레이를 표시
+    kakao.maps.event.addListener(marker, 'click', function() {
+        overlay.setMap(map);
+    });
+
+    // 지도를 클릭하면 커스텀 오버레이를 닫음
+    kakao.maps.event.addListener(map, 'click', function() {
+        overlay.setMap(null);
+    });
+
+    // 커스텀 오버레이를 닫기 위해 호출되는 함수
+    window.closeOverlay = function() {
+        overlay.setMap(null);
+    };
+}
+
+// 폴리곤 파일의 전역 변수인 globalMap을 사용하여 마커를 추가
+// 여기서는 폴리곤 파일의 globalMap을 사용하기 위해 폴리곤 파일이 먼저 로드되어야 함
+kakao.maps.load(() => {
+    // 폴리곤 파일에서 생성한 전역 지도 객체(globalMap)를 사용하여 마커 추가
+    addMarker(globalMap, new kakao.maps.LatLng(36.832408, 127.147905));
+    addMarker(globalMap, new kakao.maps.LatLng(36.828, 127.125));
+    // 원하는 만큼 마커를 추가할 수 있음
+});
 
 
 
 
 ================================================================
 
-// polygon.js 파일
-var globalMap;
+   // // 커스텀 오버레이를 생성하고 설정
+    // const content = '<div class="wrap">' +
+    //     '    <div class="info">' +
+    //     '        <div class="title">' +
+    //     '            ' + info.title +
+    //     '            <div class="close" onclick="closeOverlay()" title="' + info.closeTitle + '"></div>' +
+    //     '        </div>' +
+    //     '        <div class="body">' +
+    //     '            <div class="img">' +
+    //     '                <img src="' + info.imgSrc + '" width="73" height="70">' +
+    //     '           </div>' +
+    //     '            <div class="desc">' +
+    //     '                <div class="ellipsis">' + info.address + '</div>' +
+    //     '                <div class="jibun ellipsis">' + info.postalCode + '</div>' +
+    //     '                <div><a href="' + info.homepage + '" target="_blank" class="link">홈페이지</a></div>' +
+    //     '            </div>' +
+    //     '        </div>' +
+    //     '    </div>' +
+    //     '</div>';
+    // const overlay = new kakao.maps.CustomOverlay({
+    //     content: content,
+    //     map: map,
+    //     position: marker.getPosition(),
+    //     clickable: false
+    // });
 
-function addPolygon(map, coordinates, overlayContent) {
-    // 다각형 생성
-    const polygon = new kakao.maps.Polygon({
-        map: map, // 수정: map 변수를 사용
-        path: coordinates,
-        strokeWeight: 3,
-        strokeColor: "red",
-        strokeOpacity: 1,
-        fillColor: 'none',
-        fillOpacity: 0.5,
-    });
+    // // 처음에는 오버레이를 숨기기
+    // overlay.setMap(null);
+
+    // // 마커를 클릭하면 커스텀 오버레이를 표시
+    // kakao.maps.event.addListener(marker, 'click', function () {
+    //     overlay.setMap(map);
+    // });
+
+    // // 지도를 클릭하면 커스텀 오버레이를 닫음
+    // kakao.maps.event.addListener(map, 'click', function () {
+    //     overlay.setMap(null);
+    // });
+
+    // // 커스텀 오버레이를 닫기 위해 호출되는 함수
+    // window.closeOverlay = function () {
+    //     overlay.setMap(null);
+    // };
 }
 
-// 카카오맵 API 로드 완료 후 실행될 콜백 함수
+// 폴리곤 파일의 전역 변수인 globalMap을 사용하여 마커를 추가
+// 여기서는 폴리곤 파일의 globalMap을 사용하기 위해 폴리곤 파일이 먼저 로드되어야 함
+// kakao.maps.load(() => {
+//     const info1 = {
+//         title: '카카오 스페이스닷원',
+//         closeTitle: '닫기',
+//         imgSrc: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png',
+//         address: '제주특별자치도 제주시 첨단로 242',
+//         postalCode: '(우) 63309 (지번) 영평동 2181',
+//         homepage: 'https://www.kakaocorp.com/main'
+//     };
+
+//     const info2 = {
+//         title: '다른 장소',
+//         closeTitle: '닫기',
+//         imgSrc: 'https://example.com/another-image.png',
+//         address: '다른 주소',
+//         postalCode: '(우) 12345',
+//         homepage: 'https://www.example.com'
+//     };
+
+============================================================
+
+
+
+//inner_marker.js
+
+// 마커를 추가하는 함수
+function addMarker(map, position, info) {
+    // 마커 생성
+    const marker = new kakao.maps.Marker({
+        position: position,
+        map: map,
+        title: '마커 제목'
+    });
+
+    // // 커스텀 오버레이를 생성하고 설정
+    // const content = '<div class="wrap">' +
+    //     '    <div class="info">' +
+    //     '        <div class="title">' +
+    //     '            ' + info.title +
+    //     '            <div class="close" onclick="closeOverlay()" title="' + info.closeTitle + '"></div>' +
+    //     '        </div>' +
+    //     '        <div class="body">' +
+    //     '            <div class="img">' +
+    //     '                <img src="' + info.imgSrc + '" width="73" height="70">' +
+    //     '           </div>' +
+    //     '            <div class="desc">' +
+    //     '                <div class="ellipsis">' + info.address + '</div>' +
+    //     '                <div class="jibun ellipsis">' + info.postalCode + '</div>' +
+    //     '                <div><a href="' + info.homepage + '" target="_blank" class="link">홈페이지</a></div>' +
+    //     '            </div>' +
+    //     '        </div>' +
+    //     '    </div>' +
+    //     '</div>';
+    // const overlay = new kakao.maps.CustomOverlay({
+    //     content: content,
+    //     map: map,
+    //     position: marker.getPosition(),
+    //     clickable: false
+    // });
+
+    // // 처음에는 오버레이를 숨기기
+    // overlay.setMap(null);
+
+    // // 마커를 클릭하면 커스텀 오버레이를 표시
+    // kakao.maps.event.addListener(marker, 'click', function () {
+    //     overlay.setMap(map);
+    // });
+
+    // // 지도를 클릭하면 커스텀 오버레이를 닫음
+    // kakao.maps.event.addListener(map, 'click', function () {
+    //     overlay.setMap(null);
+    // });
+
+    // // 커스텀 오버레이를 닫기 위해 호출되는 함수
+    // window.closeOverlay = function () {
+    //     overlay.setMap(null);
+    // };
+}
+
+// 폴리곤 파일의 전역 변수인 globalMap을 사용하여 마커를 추가
+// 여기서는 폴리곤 파일의 globalMap을 사용하기 위해 폴리곤 파일이 먼저 로드되어야 함
 kakao.maps.load(() => {
-    const container = document.getElementById('map');
-    const options = {
-        center: new kakao.maps.LatLng(36.832365, 127.148021),
-        level: 5
+    // const info1 = {
+    //     title: '카카오 스페이스닷원',
+    //     closeTitle: '닫기',
+    //     imgSrc: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png',
+    //     address: '제주특별자치도 제주시 첨단로 242',
+    //     postalCode: '(우) 63309 (지번) 영평동 2181',
+    //     homepage: 'https://www.kakaocorp.com/main'
+    // };
+
+    // const info2 = {
+    //     title: '다른 장소',
+    //     closeTitle: '닫기',
+    //     imgSrc: 'https://example.com/another-image.png',
+    //     address: '다른 주소',
+    //     postalCode: '(우) 12345',
+    //     homepage: 'https://www.example.com'
+    // };
+
+    // 폴리곤 파일에서 생성한 전역 지도 객체(globalMap)를 사용하여 마커 추가
+    addMarker(globalMap, new kakao.maps.LatLng(36.832408, 127.147905), info1);
+    addMarker(globalMap, new kakao.maps.LatLng(36.828, 127.125), info2);
+    // 원하는 만큼 마커를 추가할 수 있음
+});
+
+
+
+=========================================================
+
+
+
+//detail.js
+
+function addOverlay(map, info) {
+   
+
+    // 커스텀 오버레이를 추가하는 함수 호출
+    addOverlay(map, info);
+}
+
+// 오버레이를 추가하는 함수
+function addOverlay(map, info) {
+    // ... (이전에 제공한 addOverlay 함수 코드와 동일)
+ // 커스텀 오버레이를 추가하는 함수 호출
+ addOverlay(map, info);
+    // 마커를 클릭하면 오버레이 표시
+    kakao.maps.event.addListener(marker, 'click', function () {
+        showOverlay();
+    });
+
+    // 커스텀 오버레이를 생성하고 설정
+    const content = '<div class="wrap">' +
+        '    <div class="info">' +
+        '        <div class="title">' +
+        '            ' + info.title +
+        '            <div class="close" onclick="closeOverlay()" title="' + info.closeTitle + '"></div>' +
+        '        </div>' +
+        '        <div class="body">' +
+        '            <div class="img">' +
+        '                <img src="' + info.imgSrc + '" width="73" height="70">' +
+        '           </div>' +
+        '            <div class="desc">' +
+        '                <div class="ellipsis">' + info.address + '</div>' +
+        '                <div class="jibun ellipsis">' + info.postalCode + '</div>' +
+        '                <div><a href="' + info.homepage + '" target="_blank" class="link">홈페이지</a></div>' +
+        '            </div>' +
+        '        </div>' +
+        '    </div>' +
+        '</div>';
+    const overlay = new kakao.maps.CustomOverlay({
+        content: content,
+        map: map,
+        position: marker.getPosition(),
+        clickable: false
+    });
+
+    // 처음에는 오버레이를 숨기기
+    overlay.setMap(null);
+
+    // 마커를 클릭하면 커스텀 오버레이를 표시
+    kakao.maps.event.addListener(marker, 'click', function () {
+        overlay.setMap(map);
+    });
+
+    // 지도를 클릭하면 커스텀 오버레이를 닫음
+    kakao.maps.event.addListener(map, 'click', function () {
+        overlay.setMap(null);
+    });
+
+    // 커스텀 오버레이를 닫기 위해 호출되는 함수
+    window.closeOverlay = function () {
+        overlay.setMap(null);
     };
-    // 전역으로 사용할 지도 객체에 할당
-    globalMap = new kakao.maps.Map(container, options);
+}
 
-    // 다각형1 생성 및 지도에 추가
-    addPolygon(globalMap, [
-        new kakao.maps.LatLng(36.8393801, 127.1429119),
-        new kakao.maps.LatLng(36.8395513, 127.1429237),
-        new kakao.maps.LatLng(36.8395776, 127.1426876),
-        new kakao.maps.LatLng(36.8396713, 127.1426792),
-        new kakao.maps.LatLng(36.8396734, 127.1424610),
-        new kakao.maps.LatLng(36.8393855, 127.1424345),
-    ], createOverlayContent('다각형1 정보'));
+kakao.maps.load(() => {
+    // 폴리곤 파일에서 생성한 전역 지도 객체(globalMap)를 가져와서 사용하여 마커 추가
+    // const globalMap = new kakao.maps.Map(/* your map initialization options */);
 
-    // 다각형2 생성 및 지도에 추가
-    addPolygon(globalMap, [
-        new kakao.maps.LatLng(36.8325678, 127.1473493),
-        new kakao.maps.LatLng(36.8322943, 127.1472997),
-        new kakao.maps.LatLng(36.8321899, 127.1485654),
-        new kakao.maps.LatLng(36.8323080, 127.1485778),
-        new kakao.maps.LatLng(36.8325369, 127.1486056),
-        new kakao.maps.LatLng(36.8325862, 127.1483129),
-        new kakao.maps.LatLng(36.8324712, 127.1482857),
-    ], createOverlayContent('다각형2 정보'));
+   const info1 = {
+        title: '카카오 스페이스닷원',
+        closeTitle: '닫기',
+        imgSrc: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png',
+        address: '제주특별자치도 제주시 첨단로 242',
+        postalCode: '(우) 63309 (지번) 영평동 2181',
+        homepage: 'https://www.kakaocorp.com/main'
+    };
 
-    // 다각형3 생성 및 지도에 추가
-    addPolygon(globalMap, [
-        new kakao.maps.LatLng(36.8267494, 127.1229627),
-        new kakao.maps.LatLng(36.8266042, 127.1272713),
-        new kakao.maps.LatLng(36.8274440, 127.1272810),
-        new kakao.maps.LatLng(36.8274284, 127.1266839),
-        new kakao.maps.LatLng(36.8282982, 127.1266872),
-        new kakao.maps.LatLng(36.8287799, 127.1261672),
-        new kakao.maps.LatLng(36.8289683, 127.1261092),
-        new kakao.maps.LatLng(36.8290627, 127.1235641),
-        new kakao.maps.LatLng(36.8290625, 127.1229151),
-    ], createOverlayContent('다각형3 정보'));
+    const info2 = {
+        title: '다른 장소',
+        closeTitle: '닫기',
+        imgSrc: 'https://example.com/another-image.png',
+        address: '다른 주소',
+        postalCode: '(우) 12345',
+        homepage: 'https://www.example.com'
+    };
+  
 });
