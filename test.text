@@ -620,3 +620,19 @@ kakao.maps.load(() => {
     // 원하는 만큼 마커를 추가할 수 있음
 });
 
+
+
+
+================================================================
+
+
+  // 지도를 클릭하면 커스텀 오버레이를 닫음
+    //  kakao.maps.event.addListener(map, 'click', function () {
+    //     overlay.setMap(null);
+    // });
+
+    // 커스텀 오버레이를 닫기 위해 호출되는 함수
+    // window.closeOverlay = function () {
+    //     overlay.setMap(null);
+    // };
+
