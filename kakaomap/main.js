@@ -29,60 +29,6 @@ function searchPlaces() {
     ps.keywordSearch(keyword, placesSearchCB);
 }
 
-
-////////////////////////////////////////////////////////////////
-// Custom overlay를 생성하고 설정하는 함수
-// function createCustomOverlay(info, position) {
-//     var customOverlay = new kakao.maps.CustomOverlay({
-//         position: position,
-//         content: '<div class="wrap">' +
-//             '    <div class="info">' +
-//             '        <div class="title">' +
-//             '            ' + info.title +
-//             '            <div class="close" onclick="closeOverlay()" title="' + info.closeTitle + '"></div>' +
-//             '        </div>' +
-//             '        <div class="body">' +
-//             '            <div class="img">' +
-//             '                <img src="' + info.imgSrc + '" width="73" height="70">' +
-//             '           </div>' +
-//             '            <div class="desc">' +
-//             '                <div class="ellipsis">' + info.address + '</div>' +
-//             '                <div class="jibun ellipsis">' + info.postalCode + '</div>' +
-//             '                <div><a href="' + info.homepage + '" target="_blank" class="link">홈페이지</a></div>' +
-//             '            </div>' +
-//             '        </div>' +
-//             '    </div>' +
-//             '</div>',
-//         xAnchor: 0.5,
-//         yAnchor: 1,
-//     });
-
-//     // Custom overlay를 지도에 표시합니다
-//     customOverlay.setMap(map);
-        
-//     // 처음에는 오버레이를 숨기기
-//     overlay.setMap(null);
-
-//     // 마커를 클릭하면 커스텀 오버레이를 표시
-//     kakao.maps.event.addListener(marker, 'click', function() {
-//         overlay.setMap(map);
-//     });
-
-//     // 지도를 클릭하면 커스텀 오버레이를 닫음
-//     kakao.maps.event.addListener(map, 'click', function() {
-//         overlay.setMap(null);
-//     });
-
-//     // 커스텀 오버레이를 닫기 위해 호출되는 함수
-//     window.closeOverlay = function() {
-//         overlay.setMap(null);
-//     };
-// }
-////////////////////////////////////////////////////////////////////////
-
-
-
-
 // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
 function placesSearchCB(data, status, pagination) {
     if (status === kakao.maps.services.Status.OK) {
@@ -144,17 +90,17 @@ function displayInfowindow(marker, title) {
     createCustomOverlay({
         title: title,
         closeTitle: '닫기',
-        imgSrc: 'https://example.com/image.jpg',
+        
         address: '커스텀 오버레이 주소',
         postalCode: '12345',
         homepage: 'https://example.com',
     }, marker.getPosition());
 }
 
-// 커스텀 오버레이를 생성하고 표시하는 함수입니다
+
 function displayCustomOverlay(position, info) {
     // 기존 인포윈도우 닫기
-    infowindow.close();
+    // infowindow.close();
 
     // 커스텀 오버레이 생성
     createCustomOverlay(info, position);
@@ -166,34 +112,42 @@ function displayCustomOverlay(position, info) {
         displayCustomOverlay(position, info);
     });
 
+    // 검색결과 항목을 클릭했을 때도 오버레이가 나타나도록 수정
     itemEl.onclick = function () {
         displayCustomOverlay(position, info);
     };
+
+    
+
 })(marker, places[i].place_name, placePosition, {
-    title: 'title',
+    title: places[i].place_name,
     closeTitle: '닫기',
-    imgSrc: 'https://example.com/image.jpg',
-    address: '커스텀 오버레이 주소',
-    postalCode: '12345',
+    
+    address: places[i].address_name,
+    postalCode: '12345', // postalCode를 어떻게 가져올지에 대한 정보가 없으므로 임시로 '12345'를 사용했습니다. 실제 정보로 대체해야 합니다.
     homepage: 'https://example.com',
 });
 
 
-        // mouseout 했을 때는 인포윈도우를 닫습니다
+
+
+
+
+        //마커를 클릭 했을때 오버레이가 표시됨
         (function(marker, title) {
-            kakao.maps.event.addListener(marker, 'mouseover', function() {
+            kakao.maps.event.addListener(marker, 'click', function() {
                 displayInfowindow(marker, title);
             });
 
-            kakao.maps.event.addListener(marker, 'mouseout', function() {
+            kakao.maps.event.addListener(marker, 'click', function() {
                 infowindow.close();
             });
 
-            // itemEl.onmouseover =  function () {
+            // itemEl.click =  function () {
             //     displayInfowindow(marker, title);
             // };
 
-            // itemEl.onmouseout =  function () {
+            // itemEl.click =  function () {
             //     infowindow.close();
             // };
         })(marker, places[i].place_name);
@@ -292,15 +246,6 @@ function displayPagination(pagination) {
     }
     paginationEl.appendChild(fragment);
 }
-
-// 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
-// 인포윈도우에 장소명을 표시합니다
-// function displayInfowindow(marker, title) {
-//     var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
-
-//     infowindow.setContent(content);
-//     infowindow.open(map, marker);
-// }
 
  // 검색결과 목록의 자식 Element를 제거하는 함수입니다
 function removeAllChildNods(el) {   
