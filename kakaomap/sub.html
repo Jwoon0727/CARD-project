@@ -12,11 +12,100 @@
         <div class="container"></div>
 
         <div class="text_box">
-            <h1 class="main">asdasd</h1>
+            <h1 class="main1">ㅂㅈㄷ</h1>
+            <h2 class="main2"></h2>
+            <h3 class="main3">| 정보 수정 요청</h3>
         </div>
         <div class="sub_box">
             <h2 class="sub">상세정보</h2>
+            <button onclick="checkAction()">체크</button>
+            <button onclick="researchAction()">연구</button>
+            <button onclick="prohibitAction()">금지</button>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var jibunAddress = getParameterByName('jibun');
+            if (jibunAddress) {
+                document.querySelector('.main2').textContent = jibunAddress;
+
+                readCSV('../test_information.csv', function(data) {
+                    var matchingRows = findRowsByJibun(data, jibunAddress);
+
+                    if (matchingRows.length > 0) {
+                        console.log('Details for ' + jibunAddress + ':');
+                        for (var i = 0; i < matchingRows.length; i++) {
+                            console.log(matchingRows[i][1]); // 1은 Detail 열의 인덱스
+
+                            // 여기서 추가 정보를 표시하는 로직을 추가하세요.
+                            // 예: document.querySelector('.additional-info').textContent = matchingRows[i][1];
+                        }
+                    } else {
+                        console.log('해당 Jibun에 대한 데이터를 찾을 수 없습니다.');
+                    }
+                });
+            }
+        });
+
+        function getParameterByName(name) {
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(window.location.href);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function readCSV(filePath, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', filePath, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var csvData = xhr.responseText;
+                    var parsedData = parseCSV(csvData);
+                    callback(parsedData);
+                }
+            };
+            xhr.send();
+        }
+
+        function parseCSV(csv) {
+            var rows = csv.split('\n');
+            var data = [];
+
+            for (var i = 0; i < rows.length; i++) {
+                var columns = rows[i].split(',');
+                data.push(columns);
+            }
+
+            return data;
+        }
+
+        function findRowsByJibun(data, jibun) {
+            var matchingRows = [];
+            for (var i = 0; i < data.length; i++) {
+                if (data[i][0] === jibun) { // 0은 Jibun 열의 인덱스
+                    matchingRows.push(data[i]);
+                }
+            }
+            return matchingRows;
+        }
+
+        function checkAction() {
+            // '체크' 버튼 클릭 시 수행할 동작
+            // 예: alert('체크 버튼 클릭!');
+        }
+
+        function researchAction() {
+            // '연구' 버튼 클릭 시 수행할 동작
+            // 예: alert('연구 버튼 클릭!');
+        }
+
+        function prohibitAction() {
+            // '금지' 버튼 클릭 시 수행할 동작
+            // 예: alert('금지 버튼 클릭!');
+        }
+    </script>
 </body>
 </html>

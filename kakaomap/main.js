@@ -1,3 +1,4 @@
+//main.js
 var mapContainer = document.getElementById('map'),
     mapOption = {
         center: new kakao.maps.LatLng(36.832365, 127.148021),
@@ -16,34 +17,31 @@ searchAddrFromCoords(map.getCenter(), displayCenterInfo);
 kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
     searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
         if (status === kakao.maps.services.Status.OK) {
-            // 건물이 있는 경우에만 인포윈도우를 생성
-            if (result[0].road_address || result[0].address) {
-                var detailAddr = '';
+            if (result[0].road_address) {
+                var detailAddr = '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>';
+                detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
 
-                if (result[0].road_address) {
-                    detailAddr = '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>';
-                    detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
+                var jibunAddress = result[0].address.address_name;
 
-                    var content = '<div class="bAddr">' +
-                        '<span class="title">주소정보</span>' +
-                        detailAddr +
-                        '</div>' +
-                        '<div class="closeBtn" onclick="closeOverlay()">닫기</div>';
-                        marker.setPosition(mouseEvent.latLng);
-                        marker.setMap(map);
-        
-                        infowindow.setContent(content);
-                        infowindow.open(map, marker); 
-                }
+                var content = '<div class="bAddr">' +
+                    '<a href="#" onclick="openSubPage(\'' + encodeURIComponent(jibunAddress) + '\')" class="title">주소정보</a>' +
+                    detailAddr +
+                    '</div>' +
+                    '<div class="closeBtn" onclick="closeOverlay()">닫기</div>';
+                marker.setPosition(mouseEvent.latLng);
+                marker.setMap(map);
 
-               
-                
+                infowindow.setContent(content);
+                infowindow.open(map, marker);
             }
         }
     });
 });
 
-// 인포윈도우 닫기 함수
+function openSubPage(jibunAddress) {
+    window.location.href = 'sub.html?jibun=' + jibunAddress;
+}
+
 function closeOverlay() {
     infowindow.close();
     marker.setMap(null);

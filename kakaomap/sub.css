@@ -22,6 +22,7 @@
 }
 .text_box{
     position: absolute;
+    line-height: 60px;
     top: 100px;
     margin-left: 15%;
     width: 70%;
@@ -32,13 +33,27 @@
     z-index: 9;
   
 }
+.main1{
+  margin-top: 30px;
+  font-size: 40px;
+}
+.main2{
+    font-size: 20px;
+}
+.main3{
+    position: absolute;
+    bottom: -7px;
+    right: 20px;
+}
+
+
 
 .sub_box{
     position: absolute;
     top: 320px;
     margin-left: 15%;
     width: 63%;
-    height: 216px;
+    height: 616px;
     background-color: #fff;
     padding: 30px;
 }
