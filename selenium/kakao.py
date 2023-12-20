@@ -16,7 +16,7 @@ with open(csv_file_path, 'w', encoding='utf-8', newline='') as csvfile:
     driver = webdriver.Chrome()
 
     # 검색어 입력 및 검색
-    keyword = '백석동 987'
+    keyword = '충남 천안시 서북구 백석동 986'
     kakao_map_search_url = f"https://map.kakao.com/?q={keyword}"
 
     driver.get(kakao_map_search_url)

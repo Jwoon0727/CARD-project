@@ -114,3 +114,5 @@ function closeOverlay() {
     // 폴리곤을 지도에서 제거하지 않음 (유지)
     // clearPolygons();
 }
+
+// overlay.js
