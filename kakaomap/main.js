@@ -1,4 +1,3 @@
-//main.js
 var mapContainer = document.getElementById('map'),
     mapOption = {
         center: new kakao.maps.LatLng(36.832365, 127.148021),
@@ -14,35 +13,58 @@ var marker = new kakao.maps.Marker(),
 
 searchAddrFromCoords(map.getCenter(), displayCenterInfo);
 
-// 인포윈도우 클릭 이벤트 + 모달 창
-kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-    searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
-        if (status === kakao.maps.services.Status.OK) {
-            if (result[0].road_address) {
-                var detailAddr = '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>';
-                detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
+// Kakao 지도 API 비동기 로드
+function loadKakaoMapScript() {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.defer = true;
+    script.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=d748997195923dbf828740f15b568099&libraries=services';
+    script.onload = function () {
+        // Kakao 지도 API 로드가 완료된 후 실행할 코드
+        // 이 부분에 기존의 Kakao 지도 API 관련 코드를 넣으면 됩니다.
 
-                var jibunAddress = result[0].address.address_name;
+        // 인포윈도우 클릭 이벤트 + 모달 창
+        kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+            searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    if (result[0].road_address) {
+                        var detailAddr = '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>';
+                        detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
 
-                var content = '<div class="bAddr">' +
-                    '<a href="#" class="title" id="addressInfoLink">주소정보</a>' +
-                    detailAddr +
-                    '</div>' +
-                    '<div class="closeBtn" onclick="closeOverlay()">닫기</div>';
-                marker.setPosition(mouseEvent.latLng);
-                marker.setMap(map);
+                        var jibunAddress = result[0].address.address_name;
 
-                infowindow.setContent(content);
-                infowindow.open(map, marker);
+                        var content = '<div class="bAddr">' +
+                            '<a href="#" class="title" id="addressInfoLink">주소정보</a>' +
+                            detailAddr +
+                            '</div>' +
+                            '<div class="closeBtn" onclick="closeOverlay()">닫기</div>';
+                        marker.setPosition(mouseEvent.latLng);
+                        marker.setMap(map);
 
-                // 주소정보 링크에 클릭 이벤트 추가
-                document.getElementById('addressInfoLink').addEventListener('click', function () {
-                    openModal(result[0].address.address_name);
-                });
-            }
-        }
-    });
-});// 모달 열기 함수
+                        infowindow.setContent(content);
+                        infowindow.open(map, marker);
+
+                        // 주소정보 링크에 클릭 이벤트 추가
+                        document.getElementById('addressInfoLink').addEventListener('click', function () {
+                            openModal(result[0].address.address_name);
+                        });
+                    }
+                }
+            });
+        });
+
+        // 여기에 추가적인 Kakao 지도 API 관련 코드를 작성할 수 있습니다.
+    };
+    document.head.appendChild(script);
+}
+
+// 페이지 로드 후 Kakao 지도 API 로딩 시작
+window.onload = function () {
+    loadKakaoMapScript();
+};
+
+// 모달 열기 함수
 async function openModal(jibunAddress) {
     // 이미 모달이 열려있는 경우 더 이상 실행하지 않음
     if (document.querySelector('.modal-container')) {
@@ -62,8 +84,8 @@ async function openModal(jibunAddress) {
                 <div class="jibun-info">지번 주소: ${jibunAddress}</div>
                 <div class="additional-info">로드되는 데이터를 여기에 표시하세요.</div>
                 
-                <div class="Detail"></div>
-                <div class="Name"></div>
+                <div class="Detail01"></div>
+                <div class="Name01"></div>
             </div>
         </div>
     `;
@@ -74,51 +96,73 @@ async function openModal(jibunAddress) {
     // 모달 스타일 추가
     modalContainer.querySelector('.modal').style.display = 'block';
 
-    // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
-    var csvFilePath = '../test_information.csv';
+     // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
+     var csvFilePath = '../test_information.csv';
 
-    try {
-        // CSV 파일 읽어오기
-        var matchingData = await readCSVFile(csvFilePath, jibunAddress);
+     try {
+         // CSV 파일 읽기 비동기 함수 호출
+         var data = await readCSV(csvFilePath);
+         
+         // 모달 열기 후 데이터 표시
+         document.querySelector('.modal').style.display = 'block';
+         var matchingRows = findRowsByJibun(data, jibunAddress);
+ 
+         if (matchingRows.length > 0) {
+             console.log(jibunAddress + '에 대한 상세 정보:');
+             for (var i = 0; i < matchingRows.length; i++) {
+                 console.log('Detail:', matchingRows[i][1]);
+                 console.log('Name:', matchingRows[i][2]);
+                 // 여기서 추가 정보를 표시하는 로직을 추가하세요.
+             }
+         } else {
+             console.log('해당 Jibun에 대한 데이터를 찾을 수 없습니다.');
+         }
+     } catch (error) {
+         console.error('CSV 파일을 읽어오는 중 오류가 발생했습니다:', error);
+     }
+ }
+ 
+ // readCSV 함수 Promise 기반으로 수정
+ function readCSV(filePath) {
+     return new Promise((resolve, reject) => {
+         var xhr = new XMLHttpRequest();
+         xhr.open('GET', filePath, true);
+         xhr.onreadystatechange = function() {
+             if (xhr.readyState === 4) {
+                 if (xhr.status === 200) {
+                     var csvData = xhr.responseText;
+                     var parsedData = parseCSV(csvData);
+                     resolve(parsedData);
+                 } else {
+                     reject(new Error('Failed to fetch CSV file'));
+                 }
+             }
+         };
+         xhr.send();
+     });
+ }
+ 
+ // parseCSV 함수 정의
+function parseCSV(csv) {
+    var rows = csv.split('\n');
+    var data = [];
 
-        // 찾은 데이터가 있다면 모달에 추가 정보 표시
-        if (matchingData) {
-            document.querySelector('.Detail').innerHTML = `Detail: ${matchingData['Detail']}`;
-            document.querySelector('.Name').innerHTML = `Name: ${matchingData['Name']}`;
-        } else {
-            document.querySelector('.Detail').innerHTML = '일치하는 데이터가 없습니다.';
-            document.querySelector('.Name').innerHTML = '';
-        }
-    } catch (error) {
-        console.error("Error reading CSV file:", error);
+    for (var i = 0; i < rows.length; i++) {
+        var columns = rows[i].split(',');
+        data.push(columns);
     }
+
+    return data;
 }
-
-// CSV 파일 읽어오기 함수
-function readCSVFile(filePath, jibunAddress) {
-    return new Promise(function (resolve, reject) {
-        // CSV 파일을 읽어오는 로직을 구현해야 함
-        // 이 예시에서는 jQuery의 AJAX를 사용하고, PapaParse 라이브러리를 이용합니다.
-        $.ajax({
-            type: "GET",
-            url: filePath,
-            dataType: "text",
-            success: function (data) {
-                // CSV 데이터를 파싱
-                var csvData = Papa.parse(data, { header: true }).data;
-
-                // Jibun 값과 일치하는 데이터 찾기
-                var matchingData = csvData.find(function (row) {
-                    return row['Jibun'] === jibunAddress;
-                });
-
-                resolve(matchingData);
-            },
-            error: function (error) {
-                reject(error);
-            }
-        });
-    });
+// findRowsByJibun 함수 정의
+function findRowsByJibun(data, jibun) {
+    var matchingRows = [];
+    for (var i = 0; i < data.length; i++) {
+        if (data[i][0] === jibun) { // 0은 Jibun 열의 인덱스
+            matchingRows.push(data[i]);
+        }
+    }
+    return matchingRows;
 }
 
 // 모달 닫기 함수
@@ -129,8 +173,7 @@ function closeModal() {
     }
 }
 
-//여기까지 모달 창
-
+// 여기까지 모달 창
 
 function closeOverlay() {
     infowindow.close();
@@ -161,3 +204,4 @@ function displayCenterInfo(result, status) {
         }
     }
 }
+
