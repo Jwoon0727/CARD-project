@@ -3,3 +3,110 @@
 충남 천안시 서북구 백석동 987,꿈틀공부방, 랜드빌
 
 충남 천안시 서북구 백석동 986, 애니카랜드 천안백석점, 애니카랜드
+
+
+
+
+
+// 모달 열기 함수
+async function openModal(jibunAddress) {
+    // 이미 모달이 열려있는 경우 더 이상 실행하지 않음
+    if (document.querySelector('.modal-container')) {
+        return;
+    }
+
+    // 새로운 div 요소를 생성하여 모달을 나타냄
+    var modalContainer = document.createElement('div');
+    modalContainer.className = 'modal-container';
+
+    // 모달 내용 추가
+    modalContainer.innerHTML = `
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 class="main2">${jibunAddress}</h2>
+                <div class="jibun-info">지번 주소: ${jibunAddress}</div>
+                <div class="additional-info">로드되는 데이터를 여기에 표시하세요.</div>
+                
+                <div class="Detail"></div>
+                <div class="Name"></div>
+            </div>
+        </div>
+    `;
+
+    // body에 모달 요소 추가
+    document.body.appendChild(modalContainer);
+
+    // 모달 스타일 추가
+    modalContainer.querySelector('.modal').style.display = 'block';
+
+    // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
+    var csvFilePath = '../test_information.csv';
+
+   // CSV 파일 읽어오기 함수
+function readCSVFile(filePath, jibunAddress) {
+    return new Promise(function (resolve, reject) {
+        // CSV 파일을 읽어오는 로직을 구현해야 함
+        // 이 예시에서는 jQuery의 AJAX를 사용하고, PapaParse 라이브러리를 이용합니다.
+        $.ajax({
+            type: "GET",
+            url: filePath,
+            dataType: "text",
+            success: function (data) {
+                // CSV 데이터를 파싱
+                var csvData = Papa.parse(data, { header: true }).data;
+
+                // Jibun 값과 일치하는 데이터 찾기
+                var matchingData = csvData.find(function (row) {
+                    // Jibun 주소를 비교할 때 앞뒤 공백을 제거하여 일치 여부 확인
+                    return row['Jibun'].trim() === jibunAddress.trim();
+                });
+
+                resolve(matchingData);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+
+    try {
+        // CSV 파일 읽어오기
+        var matchingData = await readCSVFile(csvFilePath, jibunAddress);
+
+        // 찾은 데이터가 있다면 모달에 추가 정보 표시
+        if (matchingData) {
+            // 'Detail' 및 'Name' 값이 있는지 확인 후 출력
+            console.log('Detail:', matchingData['Detail']);
+            console.log('Name:', matchingData['Name']);
+
+            // 모달에 추가 정보 표시
+            document.querySelector('.Detail').innerHTML = `Detail: ${matchingData['Detail']}`;
+            document.querySelector('.Name').innerHTML = `Name: ${matchingData['Name']}`;
+
+            // 콘솔에 데이터 로그 출력
+            console.log(jibunAddress + '에 대한 상세 정보:');
+            console.log('Detail:', matchingData['Detail']);
+            console.log('Name:', matchingData['Name']);
+
+            // 여기서 추가 정보를 표시하는 로직을 추가하세요.
+            // 예: document.querySelector('.additional-info').textContent = matchingData['AdditionalInfo'];
+        } else {
+            document.querySelector('.Detail').innerHTML = '일치하는 데이터가 없습니다.';
+            document.querySelector('.Name').innerHTML = '';
+            console.log('해당 Jibun에 대한 데이터를 찾을 수 없습니다.');
+        }
+    } catch (error) {
+        console.error("Error reading CSV file:", error);
+    }
+}
+
+// 모달 닫기 함수
+function closeModal() {
+    var modalContainer = document.querySelector('.modal-container');
+    if (modalContainer) {
+        modalContainer.parentNode.removeChild(modalContainer);
+    }
+}

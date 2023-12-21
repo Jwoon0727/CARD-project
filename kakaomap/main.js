@@ -64,7 +64,9 @@ window.onload = function () {
     loadKakaoMapScript();
 };
 
-// 모달 열기 함수
+
+
+// 모달 열기 함수 --------------------------------
 async function openModal(jibunAddress) {
     // 이미 모달이 열려있는 경우 더 이상 실행하지 않음
     if (document.querySelector('.modal-container')) {
@@ -93,56 +95,66 @@ async function openModal(jibunAddress) {
     // body에 모달 요소 추가
     document.body.appendChild(modalContainer);
 
-    // 모달 스타일 추가
-    modalContainer.querySelector('.modal').style.display = 'block';
+    // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
+    var csvFilePath = '../test_information.csv';
 
-     // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
-     var csvFilePath = '../test_information.csv';
+    try {
+        // CSV 파일 읽기 비동기 함수 호출
+        var data = await readCSV(csvFilePath);
 
-     try {
-         // CSV 파일 읽기 비동기 함수 호출
-         var data = await readCSV(csvFilePath);
-         
-         // 모달 열기 후 데이터 표시
-         document.querySelector('.modal').style.display = 'block';
-         var matchingRows = findRowsByJibun(data, jibunAddress);
- 
-         if (matchingRows.length > 0) {
-             console.log(jibunAddress + '에 대한 상세 정보:');
-             for (var i = 0; i < matchingRows.length; i++) {
-                 console.log('Detail:', matchingRows[i][1]);
-                 console.log('Name:', matchingRows[i][2]);
-                 // 여기서 추가 정보를 표시하는 로직을 추가하세요.
-             }
-         } else {
-             console.log('해당 Jibun에 대한 데이터를 찾을 수 없습니다.');
-         }
-     } catch (error) {
-         console.error('CSV 파일을 읽어오는 중 오류가 발생했습니다:', error);
-     }
- }
- 
- // readCSV 함수 Promise 기반으로 수정
- function readCSV(filePath) {
-     return new Promise((resolve, reject) => {
-         var xhr = new XMLHttpRequest();
-         xhr.open('GET', filePath, true);
-         xhr.onreadystatechange = function() {
-             if (xhr.readyState === 4) {
-                 if (xhr.status === 200) {
-                     var csvData = xhr.responseText;
-                     var parsedData = parseCSV(csvData);
-                     resolve(parsedData);
-                 } else {
-                     reject(new Error('Failed to fetch CSV file'));
-                 }
-             }
-         };
-         xhr.send();
-     });
- }
- 
- // parseCSV 함수 정의
+        // 모달 열기 후 데이터 표시
+        var modal = modalContainer.querySelector('.modal');
+        modal.style.display = 'block';
+
+        var matchingRows = findRowsByJibun(data, jibunAddress);
+
+        if (matchingRows.length > 0) {
+            console.log(jibunAddress + '에 대한 상세 정보:');
+            
+            // Detail01과 Name01에 값 추가
+            for (var i = 0; i < matchingRows.length; i++) {
+                console.log('Detail:', matchingRows[i][1]);
+                
+                // Name01에 값 추가 (한 번만 출력)
+                if (i === 0) {
+                    modalContainer.querySelector('.Name01').innerHTML = 'Name: ' + matchingRows[i][2] + '<br>';
+                }
+
+                // Detail01에 값 추가
+                modalContainer.querySelector('.Detail01').innerHTML += 'Detail: ' + matchingRows[i][1] + '<br>';
+
+                // 여기서 추가 정보를 표시하는 로직을 추가하세요.
+            }
+        } else {
+            console.log('해당 Jibun에 대한 데이터를 찾을 수 없습니다.');
+        }
+    } catch (error) {
+        console.error('CSV 파일을 읽어오는 중 오류가 발생했습니다:', error);
+    }
+}
+
+
+// readCSV 함수 Promise 기반으로 수정
+function readCSV(filePath) {
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', filePath, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var csvData = xhr.responseText;
+                    var parsedData = parseCSV(csvData);
+                    resolve(parsedData);
+                } else {
+                    reject(new Error('Failed to fetch CSV file'));
+                }
+            }
+        };
+        xhr.send();
+    });
+}
+
+// parseCSV 함수 정의
 function parseCSV(csv) {
     var rows = csv.split('\n');
     var data = [];
@@ -154,6 +166,7 @@ function parseCSV(csv) {
 
     return data;
 }
+
 // findRowsByJibun 함수 정의
 function findRowsByJibun(data, jibun) {
     var matchingRows = [];
@@ -173,7 +186,7 @@ function closeModal() {
     }
 }
 
-// 여기까지 모달 창
+// 여기까지 모달 창 --------------------------------
 
 function closeOverlay() {
     infowindow.close();
