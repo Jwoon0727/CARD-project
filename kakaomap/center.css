@@ -76,18 +76,95 @@
   position: absolute;
   top: 10px;
   right: 290px;
-  z-index: 99999;
+  z-index: 99;
 }
 button{
   position: absolute;
   top: 10px;
-  right: 260px;
-  z-index: 9999;
+  right: 250px;
+  z-index: 99;
 }
 
 
 .modal{
-  width: 400px;
+  width: 600px;
   height: 300px;
-  background-color: bisque;
+  padding-top: 40px;
+  background-color: lightgrey;
+  position: absolute;
+  left: 30%;
+  height: 100%;
+  top: 2%;
+  z-index: 9999;
+  border-radius: 10px;
 }
+.wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: rgba(0, 0, 0, 0.5); /* 여기서 0.5는 투명도를 나타냅니다. 0이 완전 투명, 1이 완전 불투명입니다. */
+  z-index: 100; /* 박스 뒤에 배치되도록 음수 z-index를 사용합니다. */
+}
+.close {
+  position: absolute;
+  top: 5%;
+  right: -5%;
+  transform: scale(1.5);
+  color: #fff;
+}
+.close::before {
+  content: "";
+  position: absolute;
+  width: 18px; /* 원하는 동그라미 크기 */
+  height: 18px;
+  background-color: black;
+  border-radius: 50%; /* 동그라미 모양을 위한 속성 */
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 가운데 정렬을 위한 속성 */
+  z-index: -1; /* .close 버튼 뒤에 위치하도록 음수 z-index 설정 */
+}
+
+.box1{
+border-radius: 15px;
+margin-left: 15%;
+width: 70%;
+height: 80px;
+text-align: center;
+padding-top: 10px;
+background-color: #fff;
+}
+
+.box2{
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 80px;
+  margin-top: 3%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 26px;
+}
+
+.box3 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 200px;
+  margin-top: 3%;
+  background-color: #fff;
+  line-height: 40px;
+  
+  
+  font-size: 20px;
+}
+
+.Detail01 {
+  padding: 40px;
+}
+

@@ -79,17 +79,28 @@ async function openModal(jibunAddress) {
 
     // 모달 내용 추가
     modalContainer.innerHTML = `
+    <div class="wrap">
         <div class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal()">&times;</span>
+
+               <div class="box1">
                 <h2 class="main2">${jibunAddress}</h2>
-                <div class="jibun-info">지번 주소: ${jibunAddress}</div>
-                <div class="additional-info">로드되는 데이터를 여기에 표시하세요.</div>
-                
-                <div class="Detail01"></div>
-                <div class="Name01"></div>
+               </div>
+
+               <div class="box2">
+               <div class="Name01"></div>
+               </div>
+
+               <div class="box3">
+               <div class="Detail01"></div>
+              
+               </div>
+
+            
             </div>
         </div>
+    </div>
     `;
 
     // body에 모달 요소 추가
@@ -111,20 +122,55 @@ async function openModal(jibunAddress) {
         if (matchingRows.length > 0) {
             console.log(jibunAddress + '에 대한 상세 정보:');
             
-            // Detail01과 Name01에 값 추가
-            for (var i = 0; i < matchingRows.length; i++) {
-                console.log('Detail:', matchingRows[i][1]);
-                
-                // Name01에 값 추가 (한 번만 출력)
-                if (i === 0) {
-                    modalContainer.querySelector('.Name01').innerHTML = 'Name: ' + matchingRows[i][2] + '<br>';
-                }
+          // Detail01에 값 추가
+for (var i = 0; i < matchingRows.length; i++) {
+    console.log('Detail:', matchingRows[i][1]);
 
-                // Detail01에 값 추가
-                modalContainer.querySelector('.Detail01').innerHTML += 'Detail: ' + matchingRows[i][1] + '<br>';
+    // Name01에 값 추가 (한 번만 출력)
+    if (i === 0) {
+        modalContainer.querySelector('.Name01').innerHTML = ' ' + matchingRows[i][2] + '<br>';
+    }
 
-                // 여기서 추가 정보를 표시하는 로직을 추가하세요.
-            }
+      // Detail01에 값 추가
+for (var i = 0; i < matchingRows.length; i++) {
+    var checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = 'checkbox' + i;
+    checkbox.value = matchingRows[i][1];
+  
+    var label = document.createElement('label');
+    label.htmlFor = 'checkbox' + i;
+    label.appendChild(document.createTextNode(' ' + matchingRows[i][1]));
+  
+    var dateElement = document.createElement('span');
+    dateElement.style.marginLeft = '10px';
+  
+    var br = document.createElement('br');
+  
+    modalContainer.querySelector('.Detail01').appendChild(checkbox);
+    modalContainer.querySelector('.Detail01').appendChild(label);
+    modalContainer.querySelector('.Detail01').appendChild(dateElement);
+    modalContainer.querySelector('.Detail01').appendChild(br);
+  
+    // 체크박스 클릭 이벤트 처리
+    checkbox.addEventListener('change', function(event) {
+      var currentCheckbox = event.target;
+      var currentCheckboxIndex = parseInt(currentCheckbox.id.replace('checkbox', ''), 10);
+      var currentCheckboxDateElement = currentCheckbox.nextElementSibling.nextElementSibling; // 현재 체크박스 다음에 위치한 span 요소
+  
+      if (currentCheckbox.checked) {
+        var currentDate = new Date();
+        var dateString = currentDate.toLocaleDateString();
+        currentCheckboxDateElement.textContent = dateString;
+      } else {
+        currentCheckboxDateElement.textContent = '';
+      }
+    });
+  }
+  
+
+             
+        }
         } else {
             console.log('해당 Jibun에 대한 데이터를 찾을 수 없습니다.');
         }
