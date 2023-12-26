@@ -88,12 +88,12 @@ button{
 
 .modal{
   width: 600px;
-  height: 300px;
+  height: 500px;
   padding-top: 40px;
   background-color: lightgrey;
   position: absolute;
   left: 30%;
-  height: 100%;
+  height: 130%;
   top: 2%;
   z-index: 9999;
   border-radius: 10px;
@@ -156,7 +156,7 @@ background-color: #fff;
   margin-left: 10%;
   width: 80%;
   height: 200px;
-  margin-top: 3%;
+  margin-top: 14%;
   background-color: #fff;
   line-height: 40px;
   
@@ -167,4 +167,8 @@ background-color: #fff;
 .Detail01 {
   padding: 40px;
 }
-
+.rac{
+  background-color: #fff;
+  width: 50px;
+  height: 40px;
+}
