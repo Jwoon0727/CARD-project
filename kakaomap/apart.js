@@ -36,128 +36,203 @@ var aptInfos = [
     });
   });
   
+
   //================================================================
-  function addHosuEventListeners(data) {
+
+  async function addHosuEventListeners(data) {
     var hosuElements = document.querySelectorAll("[class^='Hosu']");
   
-    hosuElements.forEach(hosuElement => {
-      hosuElement.addEventListener("click", function () {
-        var hosuIndex = hosuElement.getAttribute("data-hosu-index");
-        var jibunAddress = document.querySelector(".main2").textContent.trim();
-        var hosuId = "Hosu" + hosuIndex;
-  
-        showDetail(jibunAddress, hosuId, data);
-      });
+    hosuElements.forEach((hosuElement, index) => {
+        // 변경된 부분: 텍스트 대신 버튼으로 변경
+        hosuElement.innerHTML = `<button class="hosu-button" data-hosu-index="${index}">Hosu</button>`;
+        
+        // 버튼 클릭 이벤트 처리
+        var hosuButton = hosuElement.querySelector('.hosu-button');
+        
+        hosuButton.addEventListener('click', function () {
+            var hosuIndex = hosuButton.getAttribute('data-hosu-index');
+            var jibunAddress = document.querySelector(".main2").textContent.trim();
+            var hosuId = "Hosu" + hosuIndex;
+
+            showDetail(jibunAddress, hosuId, data);
+        });
     });
+}
+
+
+
+// 모달 열기 함수
+async function openModal(jibunAddress, dongName) {
+  // 이미 모달이 열려있는 경우 더 이상 실행하지 않음
+  if (document.querySelector(".modal-container")) {
+      return;
   }
-  
-  
-  // 모달 열기 함수
-  async function openModal(jibunAddress, dongName) {
-    // 이미 모달이 열려있는 경우 더 이상 실행하지 않음
-    if (document.querySelector(".modal-container")) {
-        return;
-    }
-  
-    // 새로운 div 요소를 생성하여 모달을 나타냄
-    var modalContainer = document.createElement("div");
-    modalContainer.className = "modal-container";
-  
-    // 모달 내용 추가
-    modalContainer.innerHTML = `
-        <div class="wrap">
-            <div class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
-  
-                    <div class="box1">
-                        <h2 class="main2">${jibunAddress}</h2>
-                    </div>
-  
-                    <div class="box2">
-                        <div class="Name01"></div>
-                    </div>
-  
-                    ${createHosuContainers()}
-  
-                    <div class="box3">
-                        <div class="Detail01"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-  
-    // body에 모달 요소 추가
-    document.body.appendChild(modalContainer);
-  
-    // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
-    var csvFilePath = "../test_information.csv";
-  
-    try {
-        // CSV 파일 읽기 비동기 함수 호출
-        var data = await readCSV(csvFilePath);
-  
-        // 모달 열기 후 데이터 표시
-        var modal = modalContainer.querySelector(".modal");
-        modal.style.display = "block";
-  
-        var matchingRows = findRowsByJibun(data, jibunAddress);
-  
-        if (matchingRows.length > 0) {
-            console.log(jibunAddress + "에 대한 상세 정보:");
-  
-            // Name01에 값 추가 (한 번만 출력)
-            if (matchingRows.length > 0) {
-                modalContainer.querySelector(".Name01").innerHTML =
-                    " " + matchingRows[0][2] + "<br>";
-  
-                // Hosu 추가
-                for (var i = 0; i < matchingRows.length; i++) {
-                    var hosuContainer = modalContainer.querySelector(`.Hosu${i}`);
-                    if (matchingRows[i][3]) {
-                        // Hosu 값이 존재하면 표시
-                        hosuContainer.innerHTML = `Hosu: ${matchingRows[i][3]}<br>`;
-                    } else {
-                        // Hosu 값이 없으면 숨김
-                        hosuContainer.parentNode.style.display = "none";
-                    }
-                }
+
+  // 새로운 div 요소를 생성하여 모달을 나타냄
+  var modalContainer = document.createElement("div");
+  modalContainer.className = "modal-container";
+
+  // 모달 내용 추가
+  modalContainer.innerHTML = `
+      <div class="wrap">
+          <div class="modal">
+              <div class="modal-content">
+                  <span class="close" onclick="closeModal()">&times;</span>
+
+                  <div class="box1">
+                      <h2 class="main2">${jibunAddress}</h2>
+                  </div>
+
+                  <div class="box2">
+                      <div class="Name01"></div>
+                  </div>
+
+                  <div class="box3">
+                      <div class="Detail01"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  `;
+
+  // body에 모달 요소 추가
+  document.body.appendChild(modalContainer);
+
+  // CSV 파일 경로 (예시 경로, 실제 경로로 변경해야 함)
+  var csvFilePath = "../test_information.csv";
+
+  try {
+      // CSV 파일 읽기 비동기 함수 호출
+      var data = await readCSV(csvFilePath);
+
+      // 모달 열기 후 데이터 표시
+      var modal = modalContainer.querySelector(".modal");
+      modal.style.display = "block";
+
+      var matchingRows = findRowsByJibun(data, jibunAddress);
+
+      if (matchingRows.length > 0) {
+          console.log(jibunAddress + "에 대한 상세 정보:");
+
+          // Name01에 값 추가 (한 번만 출력)
+          if (matchingRows.length > 0) {
+              modalContainer.querySelector(".Name01").innerHTML =
+                  " " + matchingRows[0][2] + "<br>";
+
+              // Detail01에 값 추가
+              for (var i = 0; i < matchingRows.length; i++) {
+                  console.log("Detail:", matchingRows[i][1]);
+
+                  var checkbox = document.createElement("input");
+                  checkbox.type = "checkbox";
+                  checkbox.id = "checkbox" + i;
+                  checkbox.value = matchingRows[i][1];
+
+                  var label = document.createElement("label");
+                  label.htmlFor = "checkbox" + i;
+                  label.appendChild(document.createTextNode(" " + matchingRows[i][1]));
+
+                  var dateElement = document.createElement("span");
+                  dateElement.style.marginLeft = "10px";
+
+                  var br = document.createElement("br");
+
+                  modalContainer.querySelector(".Detail01").appendChild(checkbox);
+                  modalContainer.querySelector(".Detail01").appendChild(label);
+                  modalContainer.querySelector(".Detail01").appendChild(dateElement);
+                  modalContainer.querySelector(".Detail01").appendChild(br);
+
+                  // 체크박스 클릭 이벤트 처리
+                  checkbox.addEventListener("change", function (event) {
+                      var currentCheckbox = event.target;
+                      var currentCheckboxIndex = parseInt(
+                          currentCheckbox.id.replace("checkbox", ""),
+                          10
+                      );
+                      var currentCheckboxDateElement =
+                          currentCheckbox.nextElementSibling.nextElementSibling; // 현재 체크박스 다음에 위치한 span 요소
+
+                      if (currentCheckbox.checked) {
+                          var currentDate = new Date();
+                          var dateString = currentDate.toLocaleDateString();
+                          currentCheckboxDateElement.textContent = dateString;
+                      } else {
+                          currentCheckboxDateElement.textContent = "";
+                      }
+                  });
+              }
+          }
+      } else {
+          console.log("해당 Jibun에 대한 데이터를 찾을 수 없습니다.");
+      }
+  } catch (error) {
+      console.error("CSV 파일을 읽어오는 중 오류가 발생했습니다:", error);
+  }
+
+
+
+// Hosu 추가
+for (var i = 0; i < matchingRows.length; i++) {
+  var hosuContainer = document.createElement("div");
+  hosuContainer.className = `Hosu${i}`;
+  if (matchingRows[i][3]) {
+      // Hosu 값이 존재하면 버튼으로 표시
+      hosuContainer.innerHTML = `
+          <button class="hosu-button" data-hosu-index="${i}">${matchingRows[i][3]}</button>
+      `;
+  } else {
+      // Hosu 값이 없으면 숨김
+      hosuContainer.style.display = "none";
+  }
+  modalContainer.querySelector(".box2").appendChild(hosuContainer);
+}
+
+// 버튼 클릭 이벤트 처리
+var hosuButtons = modalContainer.querySelectorAll('.hosu-button');
+hosuButtons.forEach((button, index) => {
+    button.addEventListener('click', async function () {
+        try {
+            // 현재 클릭한 버튼의 정보를 가져오기
+            var hosuIndex = button.getAttribute('data-hosu-index');
+            var hosuId = "Hosu" + hosuIndex;
+
+            // CSV 파일에서 해당 Hosu에 속하는 Detail 값 가져오기
+            var hosuDetails = await findDetailsByHosuAsync(data, hosuId);
+
+            // 결과를 표시할 요소 선택 및 초기화
+            var detailsContainer = document.querySelector('.Detail01');
+            if (!detailsContainer) {
+                console.error(".Detail01 요소를 찾을 수 없습니다.");
+                return;
             }
-  
-            // Detail01에 값 추가
-            for (var i = 0; i < matchingRows.length; i++) {
-                console.log("Detail:", matchingRows[i][1]);
-  
+
+            // 가져온 Detail 값들을 표시
+            detailsContainer.innerHTML = "";
+
+            hosuDetails.forEach(detail => {
+                var container = document.createElement("div");
+
                 var checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.id = "checkbox" + i;
-                checkbox.value = matchingRows[i][1];
-  
+                checkbox.value = detail[1];
+
                 var label = document.createElement("label");
-                label.htmlFor = "checkbox" + i;
-                label.appendChild(document.createTextNode(" " + matchingRows[i][1]));
-  
+                label.appendChild(document.createTextNode(" " + detail[1]));
+
                 var dateElement = document.createElement("span");
                 dateElement.style.marginLeft = "10px";
-  
-                var br = document.createElement("br");
-  
-                modalContainer.querySelector(".Detail01").appendChild(checkbox);
-                modalContainer.querySelector(".Detail01").appendChild(label);
-                modalContainer.querySelector(".Detail01").appendChild(dateElement);
-                modalContainer.querySelector(".Detail01").appendChild(br);
-  
+
+                container.appendChild(checkbox);
+                container.appendChild(label);
+                container.appendChild(dateElement);
+
+                detailsContainer.appendChild(container);
+
                 // 체크박스 클릭 이벤트 처리
                 checkbox.addEventListener("change", function (event) {
                     var currentCheckbox = event.target;
-                    var currentCheckboxIndex = parseInt(
-                        currentCheckbox.id.replace("checkbox", ""),
-                        10
-                    );
-                    var currentCheckboxDateElement =
-                        currentCheckbox.nextElementSibling.nextElementSibling; // 현재 체크박스 다음에 위치한 span 요소
-  
+                    var currentCheckboxDateElement = currentCheckbox.nextElementSibling.nextElementSibling;
+
                     if (currentCheckbox.checked) {
                         var currentDate = new Date();
                         var dateString = currentDate.toLocaleDateString();
@@ -166,16 +241,23 @@ var aptInfos = [
                         currentCheckboxDateElement.textContent = "";
                     }
                 });
-            }
-        } else {
-            console.log("해당 Jibun에 대한 데이터를 찾을 수 없습니다.");
+            });
+
+        } catch (error) {
+            console.error("Hosu에 대한 Detail 데이터를 불러오는 중 오류가 발생했습니다:", error);
         }
-    } catch (error) {
-        console.error("CSV 파일을 읽어오는 중 오류가 발생했습니다:", error);
-    }
-  }
-  
-  // CSV 파일 읽기 함수 Promise 기반으로 수정
+    });
+});
+
+
+// Hosu에 해당하는 Detail값들을 비동기로 찾는 함수 추가
+async function findDetailsByHosuAsync(data, hosuId) {
+  return data.filter(row => row[3] === hosuId);
+}
+
+}
+
+
   function readCSV(filePath) {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
@@ -193,7 +275,10 @@ var aptInfos = [
         };
         xhr.send();
     });
-  }
+}
+
+
+  //================================================================
   
   // parseCSV 함수 정의
   function parseCSV(csv) {
