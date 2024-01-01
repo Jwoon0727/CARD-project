@@ -97,6 +97,7 @@ button{
   top: 2%;
   z-index: 9999;
   border-radius: 10px;
+  overflow: auto;
 }
 .wrap {
   position: absolute;
@@ -106,6 +107,7 @@ button{
   height: 50%;
   background-color: rgba(0, 0, 0, 0.5); /* 여기서 0.5는 투명도를 나타냅니다. 0이 완전 투명, 1이 완전 불투명입니다. */
   z-index: 100; /* 박스 뒤에 배치되도록 음수 z-index를 사용합니다. */
+  
 }
 .close {
   position: absolute;
@@ -113,6 +115,7 @@ button{
   right: -5%;
   transform: scale(1.5);
   color: #fff;
+  z-index: 10000;
 }
 .close::before {
   content: "";
@@ -122,7 +125,7 @@ button{
   background-color: black;
   border-radius: 50%; /* 동그라미 모양을 위한 속성 */
   top: 45%;
-  left: 50%;
+  left: 20%;
   transform: translate(-50%, -50%); /* 가운데 정렬을 위한 속성 */
   z-index: -1; /* .close 버튼 뒤에 위치하도록 음수 z-index 설정 */
 }
@@ -159,8 +162,6 @@ background-color: #fff;
   margin-top: 14%;
   background-color: #fff;
   line-height: 40px;
-  
-  
   font-size: 20px;
 }
 
@@ -175,6 +176,28 @@ background-color: #fff;
 .hosu-button{
   position: relative;
   top: 80px;
-  
-  
+}
+
+.box4 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 200px;
+  margin-top: 14%;
+  background-color: #fff;
+  line-height: 40px;
+  font-size: 20px;
+}
+
+
+.box5 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 200px;
+  margin-top: 14%;
+  background-color: #fff;
+  line-height: 40px;
+  font-size: 20px;
+  margin-bottom: 100px;
 }
