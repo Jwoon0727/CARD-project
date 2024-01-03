@@ -103,69 +103,74 @@ async function openModal(jibunAddress, hosuDetails) {
 
     var matchingRows = findRowsByJibun(data, jibunAddress);
 
-    if (matchingRows.length > 0) {
-      console.log(jibunAddress + "에 대한 상세 정보:");
+   
+if (matchingRows.length > 0) {
+  console.log(jibunAddress + "에 대한 상세 정보:");
 
-      if (matchingRows.length > 0) {
-        modalContainer.querySelector(".Name01").innerHTML =
-          " " + matchingRows[0][2] + "<br>";
+  if (matchingRows.length > 0) {
+    modalContainer.querySelector(".Name01").innerHTML =
+      " " + matchingRows[0][2] + "<br>";
 
-        // 추가된 부분: 같은 Hosu 값에 대한 그룹화
-        var hosuGroups = groupByHosu(matchingRows);
+    // 추가된 부분: 같은 Hosu 값에 대한 그룹화
+    var hosuGroups = groupByHosu(matchingRows);
 
-        // Detail01, Detail02, Detail03에 똑같이 체크박스, 날짜, Hosu 정보 추가
-        for (var i = 0; i < hosuGroups.length; i++) {
-          var detailContainer = modalContainer.querySelector(`.Detail0${i + 1}`);
+    // Detail01, Detail02, Detail03에 똑같이 체크박스, 날짜, Hosu 정보 추가
+    for (var i = 0; i < hosuGroups.length; i++) {
+      var currentHosu = hosuGroups[i][0][3];
 
-          // 추가된 부분: 그룹별로 Detail 값 추가
-          for (var j = 0; j < hosuGroups[i].length; j++) {
-            var checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.id = `checkbox${i}_${j}`;
-            checkbox.value = hosuGroups[i][j][1];
+      var detailContainer = modalContainer.querySelector(`.Detail0${i + 1}`);
+      detailContainer.innerHTML = "";
 
-            var label = document.createElement("label");
-            label.htmlFor = `checkbox${i}_${j}`;
-            label.appendChild(document.createTextNode(" " + hosuGroups[i][j][1]));
-
-            // 추가된 부분: Hosu 정보 추가
-            var hosuElement = document.createElement("span");
-            hosuElement.style.marginLeft = "10px";
-            hosuElement.appendChild(document.createTextNode("Hosu: " + hosuGroups[i][j][3]));
-
-            var dateElement = document.createElement("span");
-            dateElement.style.marginLeft = "10px";
-
-            var br = document.createElement("br");
-
-            detailContainer.appendChild(checkbox);
-            detailContainer.appendChild(label);
-            detailContainer.appendChild(hosuElement);
-            detailContainer.appendChild(dateElement);
-            detailContainer.appendChild(br);
-
-            checkbox.addEventListener("change", function (event) {
-              var currentCheckbox = event.target;
-              var currentCheckboxIndex = parseInt(
-                currentCheckbox.id.split("_")[1],
-                10
-              );
-              var currentCheckboxDateElement =
-                currentCheckbox.nextElementSibling.nextElementSibling;
-
-              if (currentCheckbox.checked) {
-                var currentDate = new Date();
-                var dateString = currentDate.toLocaleDateString();
-                currentCheckboxDateElement.textContent = dateString;
-              } else {
-                currentCheckboxDateElement.textContent = "";
-              }
-            });
-          }
-          
-        }
+      // Hosu값을 박스 맨위에 표기 & css로 커스텀
+      if (currentHosu) {
+        detailContainer.setAttribute("data-hosu", currentHosu);
       }
-    } else {
+
+      // 추가된 부분: 그룹별로 Detail 값 추가
+      for (var j = 0; j < hosuGroups[i].length; j++) {
+        var checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `checkbox${i}_${j}`;
+        checkbox.value = hosuGroups[i][j][1];
+
+        var label = document.createElement("label");
+        label.htmlFor = `checkbox${i}_${j}`;
+        label.appendChild(document.createTextNode(" " + hosuGroups[i][j][1]));
+
+        // 추가된 부분: 날짜 정보 추가
+        var dateElement = document.createElement("span");
+        dateElement.style.marginLeft = "10px";
+
+        var br = document.createElement("br");
+
+        detailContainer.appendChild(checkbox);
+        detailContainer.appendChild(label);
+        detailContainer.appendChild(dateElement);
+        detailContainer.appendChild(br);
+
+        checkbox.addEventListener("change", function (event) {
+          var currentCheckbox = event.target;
+          var currentCheckboxIndex = parseInt(
+            currentCheckbox.id.split("_")[1],
+            10
+          );
+          var currentCheckboxDateElement =
+            currentCheckbox.nextElementSibling.nextElementSibling;
+
+          if (currentCheckbox.checked) {
+            var currentDate = new Date();
+            var dateString = currentDate.toLocaleDateString();
+            currentCheckboxDateElement.textContent = dateString;
+          } else {
+            currentCheckboxDateElement.textContent = "";
+          }
+        });
+      }
+    }
+  }
+}
+
+    else {
       console.log("해당 Jibun에 대한 데이터를 찾을 수 없습니다.");
     }
     

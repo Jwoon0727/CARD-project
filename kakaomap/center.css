@@ -1,5 +1,61 @@
 @charset "utf-8";
 
+#container {
+  overflow: hidden;
+  height: 300px;
+  position: relative;
+}
+#mapWrapper {
+  width: 100%;
+  height: 300px;
+  z-index: 1;
+}
+#rvWrapper {
+  width: 50%;
+  height: 300px;
+  top: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0;
+}
+#container.view_roadview #mapWrapper {
+  width: 50%;
+}
+#roadviewControl {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 42px;
+  height: 42px;
+  z-index: 99;
+  cursor: pointer;
+  background: url(https://t1.daumcdn.net/localimg/localimages/07/2018/pc/common/img_search.png)
+    0 -450px no-repeat;
+  
+}
+#roadviewControl.active {
+  background-position: 0 -350px;
+  
+}
+#close {
+  position: absolute;
+  padding: 4px;
+  top: 5px;
+  left: 5px;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #c8c8c8;
+  box-shadow: 0px 1px #888;
+}
+#close .img {
+  display: block;
+  background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/rv_close.png)
+    no-repeat;
+  width: 14px;
+  height: 14px;
+}
+
 .map_wrap,
 .map_wrap * {
   margin: 0;
@@ -36,7 +92,7 @@
 .map_wrap {
   position: relative;
   width: 100%;
-  height: 350px;
+  height: 550px;
 }
 .title {
   font-weight: bold;
@@ -66,27 +122,25 @@
 }
 
 .closeBtn {
-  position:absolute;
+  position: absolute;
   top: 5px;
   right: 6px;
- 
 }
 
-#searchInput{
+#searchInput {
   position: absolute;
   top: 10px;
   right: 290px;
   z-index: 99;
 }
-button{
+button {
   position: absolute;
   top: 10px;
   right: 250px;
   z-index: 99;
 }
 
-
-.modal{
+.modal {
   width: 600px;
   height: 500px;
   padding-top: 40px;
@@ -95,7 +149,7 @@ button{
   left: 30%;
   height: 130%;
   top: 2%;
-  z-index: 9999;
+  z-index: 999;
   border-radius: 10px;
   overflow: auto;
 }
@@ -104,15 +158,19 @@ button{
   top: 0;
   left: 0;
   width: 100%;
-  height: 50%;
-  background-color: rgba(0, 0, 0, 0.5); /* 여기서 0.5는 투명도를 나타냅니다. 0이 완전 투명, 1이 완전 불투명입니다. */
+  height: 550px;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* 여기서 0.5는 투명도를 나타냅니다. 0이 완전 투명, 1이 완전 불투명입니다. */
   z-index: 100; /* 박스 뒤에 배치되도록 음수 z-index를 사용합니다. */
-  
 }
 .close {
   position: absolute;
   top: 5%;
-  right: -5%;
+  right: 5%;
   transform: scale(1.5);
   color: #fff;
   z-index: 10000;
@@ -125,22 +183,22 @@ button{
   background-color: black;
   border-radius: 50%; /* 동그라미 모양을 위한 속성 */
   top: 45%;
-  left: 20%;
+  left: 50%;
   transform: translate(-50%, -50%); /* 가운데 정렬을 위한 속성 */
   z-index: -1; /* .close 버튼 뒤에 위치하도록 음수 z-index 설정 */
 }
 
-.box1{
-border-radius: 15px;
-margin-left: 15%;
-width: 70%;
-height: 80px;
-text-align: center;
-padding-top: 10px;
-background-color: #fff;
+.box1 {
+  border-radius: 15px;
+  margin-left: 15%;
+  width: 70%;
+  height: 80px;
+  text-align: center;
+  padding-top: 5px;
+  background-color: #fff;
 }
 
-.box2{
+.box2 {
   border-radius: 15px;
   margin-left: 10%;
   width: 80%;
@@ -159,21 +217,37 @@ background-color: #fff;
   margin-left: 10%;
   width: 80%;
   height: 200px;
-  margin-top: 14%;
+  margin-top: 30px;
   background-color: #fff;
   line-height: 40px;
   font-size: 20px;
+  overflow: auto;
 }
 
-.Detail01 {
+.Detail01,
+.Detail02,
+.Detail03 {
   padding: 40px;
 }
-.rac{
+
+.Detail01::before,
+.Detail02::before,
+.Detail03::before {
+  content: attr(data-hosu); /* 현재 요소의 data-hosu 속성 값을 표시 */
+  background: beige;
+  text-align: center;
+  border-radius: 30px;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.rac {
   background-color: #fff;
   width: 50px;
   height: 40px;
 }
-.hosu-button{
+.hosu-button {
   position: relative;
   top: 80px;
 }
@@ -183,21 +257,22 @@ background-color: #fff;
   margin-left: 10%;
   width: 80%;
   height: 200px;
-  margin-top: 14%;
+  margin-top: 30px;
   background-color: #fff;
   line-height: 40px;
   font-size: 20px;
+  overflow: auto;
 }
-
 
 .box5 {
   border-radius: 15px;
   margin-left: 10%;
   width: 80%;
   height: 200px;
-  margin-top: 14%;
+  margin-top: 30px;
+  margin-bottom: 40px;
   background-color: #fff;
   line-height: 40px;
   font-size: 20px;
-  margin-bottom: 100px;
+  overflow: auto;
 }
