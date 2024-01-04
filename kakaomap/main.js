@@ -5,7 +5,7 @@ var mapContainer = document.getElementById("map"),
     level: 4,
   };
 
-var map = new kakao.maps.Map(mapContainer, mapOption,mapContainer, mapOption);
+var map = new kakao.maps.Map(mapContainer, mapOption);
 
 var geocoder = new kakao.maps.services.Geocoder();
 
@@ -32,17 +32,19 @@ function loadKakaoMapScript() {
         if (status === kakao.maps.services.Status.OK) {
           if (result[0].road_address) {
             var detailAddr =
-              "<div>도로명주소 : " +
+              '<div class="doro"> ' +
               result[0].road_address.address_name +
+              
               "</div>";
             detailAddr +=
-              "<div>지번 주소 : " + result[0].address.address_name + "</div>";
+              '<div class="jibun-address">(지번) ' + result[0].address.address_name + "</div>";
 
             var jibunAddress = result[0].address.address_name;
 
             var content =
               '<div class="bAddr">' +
               '<a href="#" class="title" id="addressInfoLink">주소정보</a>' +
+              '<img src="../표시.png" alt="주소 이미지" class="02img">' +
               detailAddr +
               "</div>" +
               '<div class="closeBtn" onclick="closeOverlay()">닫기</div>';
@@ -289,5 +291,5 @@ function closeRoadview() {
   toggleOverlay(false);
 }
 
-
 //================================================================================================================================
+

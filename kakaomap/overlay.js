@@ -120,10 +120,83 @@ function closeOverlay() {
 
 //================================================================================================================================
 
+var mapContainer = document.getElementById('map');
 
 
 
+// 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+var map = new kakao.maps.Map(mapContainer, mapOption); 
 
+// 도형 스타일을 변수로 설정합니다
+var strokeColor = '#39f',
+	fillColor = '#cce6ff',
+	fillOpacity = 0.5,
+	hintStrokeStyle = 'dash';
+
+var options = { // Drawing Manager를 생성할 때 사용할 옵션입니다
+    map: map, 
+    drawingMode: [
+        kakao.maps.drawing.OverlayType.MARKER,
+        kakao.maps.drawing.OverlayType.ARROW,
+        kakao.maps.drawing.OverlayType.POLYLINE,
+        kakao.maps.drawing.OverlayType.RECTANGLE,
+        kakao.maps.drawing.OverlayType.CIRCLE,
+        kakao.maps.drawing.OverlayType.ELLIPSE,
+        kakao.maps.drawing.OverlayType.POLYGON
+    ],
+    // 사용자에게 제공할 그리기 가이드 툴팁입니다
+    // 사용자에게 도형을 그릴때, 드래그할때, 수정할때 가이드 툴팁을 표시하도록 설정합니다
+    guideTooltip: ['draw', 'drag', 'edit'], 
+    markerOptions: {
+        draggable: true,
+        removable: true
+    },
+    arrowOptions: {
+        draggable: true,
+        removable: true,
+        strokeColor: strokeColor,
+        hintStrokeStyle: hintStrokeStyle
+    },
+    polylineOptions: {
+        draggable: true,
+        removable: true,
+        strokeColor: strokeColor,
+        hintStrokeStyle: hintStrokeStyle
+    },
+    rectangleOptions: {
+        draggable: true,
+        removable: true,
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        fillOpacity: fillOpacity
+    },
+    circleOptions: {
+        draggable: true,
+        removable: true,
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        fillOpacity: fillOpacity
+    },
+    ellipseOptions: {
+        draggable: true,
+        removable: true,
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        fillOpacity: fillOpacity
+    },
+    polygonOptions: {
+        draggable: true,
+        removable: true,
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        fillOpacity: fillOpacity
+    }
+};
+var manager = new kakao.maps.drawing.DrawingManager(options);
+
+var toolbox = new kakao.maps.drawing.Toolbox({ drawingManager: manager });
+
+map.addControl(toolbox.getElement(), kakao.maps.ControlPosition.TOP);
 
 
 
