@@ -1,160 +1,188 @@
-//main.js
-var mapContainer = document.getElementById('map'),
-    mapOption = {
-        center: new kakao.maps.LatLng(36.832365, 127.148021),
-        level: 4
-    };
 
-var map = new kakao.maps.Map(mapContainer, mapOption);
+// overlay.js
+var locations = [
+    { 
+        number: 222, 
+        lat: 36.8278461, 
+        lng: 127.1243682, 
+        polygonPath: [
+            new kakao.maps.LatLng(36.8290402, 127.1228792),
+            new kakao.maps.LatLng(36.8267373, 127.1229472),
+            new kakao.maps.LatLng(36.8265951, 127.1272716),
+            new kakao.maps.LatLng(36.8274807, 127.1272790),
+            new kakao.maps.LatLng(36.8274571, 127.1266849),
+            new kakao.maps.LatLng(36.8283151, 127.1266551),
+            new kakao.maps.LatLng(36.8287501, 127.1261833),
+            new kakao.maps.LatLng(36.8289688, 127.1260737),
+            new kakao.maps.LatLng(36.8290402, 127.1228792)
+        ]
+    },
+    { 
+        number: 223, 
+        lat: 36.8250447, 
+        lng: 127.1214670, 
+        polygonPath: [
+            new kakao.maps.LatLng(36.8268363, 127.1208356),
+            new kakao.maps.LatLng(36.8265659, 127.1201084),
+            new kakao.maps.LatLng(36.8263251, 127.1197524),
+            new kakao.maps.LatLng(36.8261136, 127.1196652),
+            new kakao.maps.LatLng(36.8259234, 127.1190198),
+            new kakao.maps.LatLng(36.8239221, 127.1185705),
+            new kakao.maps.LatLng(36.8229100, 127.1182483),
+            new kakao.maps.LatLng(36.8235911, 127.1238766),
+            new kakao.maps.LatLng(36.8244845, 127.1237908),
+            new kakao.maps.LatLng(36.8267719, 127.1236938),
+            new kakao.maps.LatLng(36.8267419, 127.1211079),
+            new kakao.maps.LatLng(36.8268363, 127.1208356)
+           
+        ]
+    },
+   
+];
 
-var geocoder = new kakao.maps.services.Geocoder();
 
-var marker = new kakao.maps.Marker(),
-    infowindow = new kakao.maps.InfoWindow({ zindex: 1 });
+var polygons = [];
+var marker;
 
-searchAddrFromCoords(map.getCenter(), displayCenterInfo);
+function searchLocation() {
+    var searchValue = document.getElementById("searchInput").value;
 
-kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-    searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
-        if (status === kakao.maps.services.Status.OK) {
-            if (result[0].address && result[0].address.address_name) {
-                var detailAddr = '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
+    // CSV 파일 경로
+    var csvFilePath = "../number.csv"; // 이 부분을 실제 파일 경로로 수정
 
-                var content = '<div class="bAddr">' +
-                    '<a href="sub.html?address=' + encodeURIComponent(result[0].address.address_name) + '" class="title">주소정보</a>' +
-                    detailAddr +
-                    '</div>' +
-                    '<div class="closeBtn" onclick="closeOverlay()">닫기</div>';
+    // CSV 파일 비동기적으로 읽기
+    Papa.parse(csvFilePath, {
+        download: true,
+        header: true,
+        complete: function (results) {
+            // CSV 데이터를 검색하여 일치하는 구역번호의 Jibus 값을 가져오기
+            var matchedData = results.data.filter(function (item) {
+                // 문자열로 비교
+                return item.Number.trim() === searchValue.trim();
+            });
 
-                // HTML 업데이트
-                displayCenterInfo(result, status);
+            console.log('matchedData:', matchedData);
 
-                marker.setPosition(mouseEvent.latLng);
-                marker.setMap(map);
+            if (matchedData.length > 0) {
+                // 일치하는 데이터가 있을 경우 sub1과 sub2에 값을 추가
+                var sub1HTML = " ";
+                matchedData.forEach(function (item, index) {
+                    // Jibun 값을 클릭 이벤트로 처리
+                    sub1HTML += "<div class='box' onclick='handleJibunClick(\"" + item.Jibun + "\")'> " + (index + 1) + ": " + (item.Jibun || 'N/A') + "</div>";
+                });
+                document.querySelector(".sub1").innerHTML = sub1HTML;
 
-                infowindow.setContent(content);
-                infowindow.open(map, marker);
+                document.querySelector(".sub2").innerHTML = "구역번호 : " + searchValue;
+
+                // 폴리곤 표시
+                var foundLocation = locations.find(location => location.number.toString() === searchValue.trim());
+                if (foundLocation) {
+                    var moveLatLng = new kakao.maps.LatLng(foundLocation.lat, foundLocation.lng);
+                    map.panTo(moveLatLng);
+                    marker.setPosition(moveLatLng);
+                    marker.setMap(map);
+                    infowindow.close();
+                    displayPolygons(foundLocation);
+                }
+            } else {
+                // 일치하는 데이터가 없을 경우 메시지 추가 또는 다른 처리 수행
+                document.querySelector(".sub1").innerHTML = "일치하는 데이터가 없습니다.";
+                document.querySelector(".sub2").innerHTML = "";
+
+                // 폴리곤 초기화
+                clearPolygons();
             }
         }
     });
-});
+}
 
-function displayCenterInfo(result, status) {
-    if (status === kakao.maps.services.Status.OK) {
-        var infoDiv = document.querySelector('.main2');
 
-        for (var i = 0; i < result.length; i++) {
-            if (result[i].region_type === 'H') {
-                var address = result[i].address_name;
+// Jibun을 클릭했을 때 처리하는 함수
+function handleJibunClick(clickedJibun) {
+    // 이 부분에 Jibun을 클릭했을 때의 동작을 추가하면 됩니다.
+    console.log('Clicked Jibun:', clickedJibun);
 
-                // 지번주소로 HTML 내용 업데이트
-                infoDiv.innerHTML = address;
-                break;
-            }
-        }
+    // Jibun 값을 이용하여 해당 위치의 정보를 찾음
+    var foundLocation = locations.find(location => location.jibun === clickedJibun);
+
+    if (foundLocation) {
+        // 클릭한 Jibun에 해당하는 위치에 마커 생성 또는 이동
+       // 클릭한 Jibun에 해당하는 위치에 마커 생성 또는 이동
+ // 클릭한 Jibun에 해당하는 위치에 마커 생성 또는 이동
+ var markerPosition = new kakao.maps.LatLng(foundLocation.lat, foundLocation.lng);
+
+ // 디버깅을 위한 로그 추가
+ console.log('marker:', marker);
+
+ // 기존 마커가 없으면 새로 생성, 있으면 위치만 이동
+ if (!marker) {
+     marker = new kakao.maps.Marker({
+         position: markerPosition,
+         map: map
+     });
+
+     // 마커를 클릭했을 때 동작 설정
+     kakao.maps.event.addListener(marker, 'click', function () {
+         // 마커를 클릭했을 때 정보창 열기 등의 동작 수행
+         infowindow.setContent('마커를 클릭했습니다.');
+         infowindow.open(map, marker);
+     });
+ } else {
+     // 기존 마커의 위치 변경
+     marker.setPosition(markerPosition);
+ }
+
+ // 디버깅을 위한 로그 추가
+ console.log('marker after update:', marker);
+
+ // 지도 이동
+ map.panTo(markerPosition);
+
+// 추가적으로 필요한 마커 관련 동작 수행
+// ...
+
+// 정보창 열기 등의 동작 수행
+// ...
+
+    } else {
+        console.log('Location not found for clicked Jibun:', clickedJibun);
     }
 }
 
 
 
-// 인포윈도우 닫기 함수
+function displayPolygons(location) {
+  
+    clearPolygons();
+
+    var polygon = new kakao.maps.Polygon({
+        path: location.polygonPath,
+        strokeWeight: 3,
+        strokeColor: 'red',
+        strokeOpacity: 0.8,
+    });
+
+    polygon.setMap(map);
+    polygons.push(polygon);
+}
+
+function clearPolygons() {
+    polygons.forEach(polygon => polygon.setMap(null));
+    polygons = [];
+}
+
 function closeOverlay() {
     infowindow.close();
     marker.setMap(null);
+    clearPolygons();
+}
+function closeOverlay() {
+    infowindow.close();
+    marker.setMap(null);
+
 }
 
-kakao.maps.event.addListener(map, 'idle', function () {
-    searchAddrFromCoords(map.getCenter(), displayCenterInfo);
-});
-
-function searchAddrFromCoords(coords, callback) {
-    geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
-}
-
-function searchDetailAddrFromCoords(coords, callback) {
-    geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
-}
-
-function displayCenterInfo(result, status) {
-    if (status === kakao.maps.services.Status.OK) {
-        var infoDiv = document.getElementById('centerAddr');
-
-        for (var i = 0; i < result.length; i++) {
-            if (result[i].region_type === 'H') {
-                infoDiv.innerHTML = result[i].address_name;
-                break;
-            }
-        }
-    }
-}
+// overlay.js
 
 
-
-
-================================================================
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sub_kakao</title>
-
-    <link rel="stylesheet" type="text/css" href="sub.css">
-</head>
-<body>
-    <div class="wrap">
-        <div class="container"></div>
-
-        <div class="text_box">
-            <h1 class="main1">ㅂㅈㄷ</h1>
-            <h2 class="main2"></h2>
-            <h3 class="main3">| 정보 수정 요청</h3>
-        </div>
-        <div class="sub_box">
-            <h2 class="sub">상세정보</h2>
-            <button onclick="">체크</button>
-            <button onclick="">연구</button>
-            <button onclick="">금지</button>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 페이지 로드 시 실행되는 함수
-            var address = getParameterByName('address');
-            if (address) {
-                // 주소 정보가 있는 경우에만 처리
-                document.querySelector('.main2').textContent = address;
-            }
-        });
-
-        function getParameterByName(name) {
-            // URL에서 쿼리 문자열을 파싱하여 주어진 이름의 매개변수 값을 가져오는 함수
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(window.location.href);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
-
-        function checkAction() {
-            // '체크' 버튼 클릭 시 수행할 동작
-            // 예: alert('체크 버튼 클릭!');
-        }
-
-        function researchAction() {
-            // '연구' 버튼 클릭 시 수행할 동작
-            // 예: alert('연구 버튼 클릭!');
-        }
-
-        function prohibitAction() {
-            // '금지' 버튼 클릭 시 수행할 동작
-            // 예: alert('금지 버튼 클릭!');
-        }
-    </script>
-</body>
-</html>
+//================================================================================================================================

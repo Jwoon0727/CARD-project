@@ -1,79 +1,51 @@
 @charset "utf-8";
 
-#container {
-  overflow: hidden;
-  height: 450px;
+.map_wrap {
   position: relative;
-}
-#mapWrapper {
-  width: 100%;
-  height: 300px;
+  left: 4.3%;
+  width: 88%;
+  height: 500px;
+  
   z-index: 1;
 }
-#rvWrapper {
+/* #container {
+  overflow: hidden;
+  height: 500px;
+  position: relative;
+} */
+/* #mapWrapper {
+  width: 100%;
+  height: 500px;
+  z-index: 1;
+} */
+/* #rvWrapper {
   width: 50%;
   height: 300px;
   position: absolute;
   top: 60px;
   left: 25%;
   z-index: 0;
-}
-#container.view_roadview #mapWrapper {
-  width: 50%;
-}
-#roadviewControl {
-  position: absolute;
-  top: 9px;
-  left: 400px;
-  width: 42px;
-  height: 42px;
-  z-index: 999;
-  cursor: pointer;
-  background: url(https://t1.daumcdn.net/localimg/localimages/07/2018/pc/common/img_search.png)
-    0 -450px no-repeat;
-  
-}
-#roadviewControl.active {
-  background-position: 0 -350px;
-  z-index: 999;
-}
-#close {
-  position: absolute;
-  padding: 4px;
-  top: 5px;
-  left: 5px;
-  cursor: pointer;
-  background: #fff;
-  border-radius: 4px;
-  border: 1px solid #c8c8c8;
-  box-shadow: 0px 1px #888;
-}
-#close .img {
-  display: block;
-  background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/rv_close.png)
-    no-repeat;
-  width: 14px;
-  height: 14px;
-}
+} */
 
-.map_wrap,
+/* .map_wrap,
 .map_wrap * {
   margin: 0;
   padding: 0;
   font-family: "Malgun Gothic", dotum, "돋움", sans-serif;
   font-size: 12px;
-}
+} */
 .map_wrap a,
 .map_wrap a:hover,
 .map_wrap a:active {
   color: #000;
   text-decoration: none;
 }
-.map_wrap {
+/* .map_wrap {
   position: relative;
   width: 900%;
   height: 500px;
-}
+} */
+/* 
 #menu_wrap {
   position: absolute;
   top: 0;
@@ -87,15 +59,63 @@
   z-index: 1;
   font-size: 12px;
   border-radius: 10px;
+} */
+#addressInfoLink:hover {
+  text-decoration: underline; /* 호버 시 밑줄 표시 */
+  color: rgb(105, 105, 242); /* 호버 시 글자 색 변경 */
+  cursor: pointer; /* 호버 시 커서 모양 변경 */
+}
+.sub_box {
+  
+  width: 100%;
+  height: 900px;
+  background-color: rgb(226, 230, 249);
+  position: absolute;
+  display: flex;
+   /* 수평 가운데 정렬 */
+  
+  height: 100vh; /* 뷰포트 높이에 따라 조절 */
+  
+}
+.back{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 900px;
+  background-color:  rgb(233, 236, 245);
+}
+.sub2{
+  font-size: 20px;
+  border-radius: 15px;
+  position: absolute;
+  top: 50px;
+  left: 5%;
+  margin-left: 10px;
+  z-index: 9999;
+  margin-bottom: 30px;
+  width: 180px;
+  height: 25px;
+  background-color: white;
+  text-align: center;
 }
 
-.map_wrap {
-  position: relative;
-  width: 95%;
-  height: 550px;
-  
-  z-index: 1;
+.box{
+  margin-top: 15%;
+  margin-left: 10%;
+  border-radius: 10px;
+  text-align: center; /* 텍스트를 수평으로 가운데 정렬 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%; 
+  font-size: 20px;
+  width: 290%;
+  height: 80px;
+  background-color: whitesmoke;
+  margin-bottom: 30px;
+  z-index: 999;
 }
+
 .title {
   font-weight: bold;
   display: block;
@@ -147,18 +167,18 @@
   height: 20px;
 }
 .address-image{
-  width: 20px; /* 이미지 너비 조절 */
-  height: 20px; /* 이미지 높이 조절 */
-  margin-left: 70px; /* 이미지와 주소정보 사이 여백 설정 */
+  width: 20px; 
+  height: 20px; 
+  margin-left: 70px; 
  
   top: 30px;
   left: 2px;
   
 }
 .bAddr img {
-  width: 20px; /* 이미지 너비 조절 */
-  height: 20px; /* 이미지 높이 조절 */
-  margin-left: 70px; /* 이미지와 주소정보 사이 여백 설정 */
+  width: 20px;
+  height: 20px;
+  margin-left: 70px;
   position: absolute;
   top: 18px;
   left: 12px;
@@ -203,10 +223,11 @@ button {
 
 .modal {
   width: 600px;
-  height: 500px;
+  height: 550px;
   padding-top: 40px;
   background-color: lightgrey;
   position: absolute;
+  
   left: 30%;
   height: 130%;
   top: 2%;
@@ -219,14 +240,14 @@ button {
   top: 0;
   left: 0;
   width: 100%;
-  height: 550px;
+  height: 560px;
   background-color: rgba(
     0,
     0,
     0,
     0.5
-  ); /* 여기서 0.5는 투명도를 나타냅니다. 0이 완전 투명, 1이 완전 불투명입니다. */
-  z-index: 100; /* 박스 뒤에 배치되도록 음수 z-index를 사용합니다. */
+  ); 
+  z-index: 100; 
 }
 .close {
   position: absolute;
@@ -239,14 +260,14 @@ button {
 .close::before {
   content: "";
   position: absolute;
-  width: 18px; /* 원하는 동그라미 크기 */
+  width: 18px; 
   height: 18px;
   background-color: black;
-  border-radius: 50%; /* 동그라미 모양을 위한 속성 */
+  border-radius: 50%;
   top: 45%;
   left: 50%;
-  transform: translate(-50%, -50%); /* 가운데 정렬을 위한 속성 */
-  z-index: -1; /* .close 버튼 뒤에 위치하도록 음수 z-index 설정 */
+  transform: translate(-50%, -50%);
+  z-index: -1; 
 }
 
 .box1 {
@@ -294,7 +315,7 @@ button {
 .Detail01::before,
 .Detail02::before,
 .Detail03::before {
-  content: attr(data-hosu); /* 현재 요소의 data-hosu 속성 값을 표시 */
+  content: attr(data-hosu); 
   background: beige;
   text-align: center;
   border-radius: 30px;
