@@ -97,6 +97,11 @@ function searchLocation() {
     });
 }
 
+function handleBookmarkClick(jibun) {
+    // 북마커 클릭 시 수행할 동작 추가
+    console.log('Bookmark clicked for Jibun:', jibun);
+}
+
 var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 
 

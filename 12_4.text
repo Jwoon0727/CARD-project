@@ -1,188 +1,407 @@
+@charset "utf-8";
 
-// overlay.js
-var locations = [
-    { 
-        number: 222, 
-        lat: 36.8278461, 
-        lng: 127.1243682, 
-        polygonPath: [
-            new kakao.maps.LatLng(36.8290402, 127.1228792),
-            new kakao.maps.LatLng(36.8267373, 127.1229472),
-            new kakao.maps.LatLng(36.8265951, 127.1272716),
-            new kakao.maps.LatLng(36.8274807, 127.1272790),
-            new kakao.maps.LatLng(36.8274571, 127.1266849),
-            new kakao.maps.LatLng(36.8283151, 127.1266551),
-            new kakao.maps.LatLng(36.8287501, 127.1261833),
-            new kakao.maps.LatLng(36.8289688, 127.1260737),
-            new kakao.maps.LatLng(36.8290402, 127.1228792)
-        ]
-    },
-    { 
-        number: 223, 
-        lat: 36.8250447, 
-        lng: 127.1214670, 
-        polygonPath: [
-            new kakao.maps.LatLng(36.8268363, 127.1208356),
-            new kakao.maps.LatLng(36.8265659, 127.1201084),
-            new kakao.maps.LatLng(36.8263251, 127.1197524),
-            new kakao.maps.LatLng(36.8261136, 127.1196652),
-            new kakao.maps.LatLng(36.8259234, 127.1190198),
-            new kakao.maps.LatLng(36.8239221, 127.1185705),
-            new kakao.maps.LatLng(36.8229100, 127.1182483),
-            new kakao.maps.LatLng(36.8235911, 127.1238766),
-            new kakao.maps.LatLng(36.8244845, 127.1237908),
-            new kakao.maps.LatLng(36.8267719, 127.1236938),
-            new kakao.maps.LatLng(36.8267419, 127.1211079),
-            new kakao.maps.LatLng(36.8268363, 127.1208356)
-           
-        ]
-    },
-   
-];
-
-
-var polygons = [];
-var marker;
-
-function searchLocation() {
-    var searchValue = document.getElementById("searchInput").value;
-
-    // CSV 파일 경로
-    var csvFilePath = "../number.csv"; // 이 부분을 실제 파일 경로로 수정
-
-    // CSV 파일 비동기적으로 읽기
-    Papa.parse(csvFilePath, {
-        download: true,
-        header: true,
-        complete: function (results) {
-            // CSV 데이터를 검색하여 일치하는 구역번호의 Jibus 값을 가져오기
-            var matchedData = results.data.filter(function (item) {
-                // 문자열로 비교
-                return item.Number.trim() === searchValue.trim();
-            });
-
-            console.log('matchedData:', matchedData);
-
-            if (matchedData.length > 0) {
-                // 일치하는 데이터가 있을 경우 sub1과 sub2에 값을 추가
-                var sub1HTML = " ";
-                matchedData.forEach(function (item, index) {
-                    // Jibun 값을 클릭 이벤트로 처리
-                    sub1HTML += "<div class='box' onclick='handleJibunClick(\"" + item.Jibun + "\")'> " + (index + 1) + ": " + (item.Jibun || 'N/A') + "</div>";
-                });
-                document.querySelector(".sub1").innerHTML = sub1HTML;
-
-                document.querySelector(".sub2").innerHTML = "구역번호 : " + searchValue;
-
-                // 폴리곤 표시
-                var foundLocation = locations.find(location => location.number.toString() === searchValue.trim());
-                if (foundLocation) {
-                    var moveLatLng = new kakao.maps.LatLng(foundLocation.lat, foundLocation.lng);
-                    map.panTo(moveLatLng);
-                    marker.setPosition(moveLatLng);
-                    marker.setMap(map);
-                    infowindow.close();
-                    displayPolygons(foundLocation);
-                }
-            } else {
-                // 일치하는 데이터가 없을 경우 메시지 추가 또는 다른 처리 수행
-                document.querySelector(".sub1").innerHTML = "일치하는 데이터가 없습니다.";
-                document.querySelector(".sub2").innerHTML = "";
-
-                // 폴리곤 초기화
-                clearPolygons();
-            }
-        }
-    });
+#map{
+  border-radius: 25px;
 }
 
-
-// Jibun을 클릭했을 때 처리하는 함수
-function handleJibunClick(clickedJibun) {
-    // 이 부분에 Jibun을 클릭했을 때의 동작을 추가하면 됩니다.
-    console.log('Clicked Jibun:', clickedJibun);
-
-    // Jibun 값을 이용하여 해당 위치의 정보를 찾음
-    var foundLocation = locations.find(location => location.jibun === clickedJibun);
-
-    if (foundLocation) {
-        // 클릭한 Jibun에 해당하는 위치에 마커 생성 또는 이동
-       // 클릭한 Jibun에 해당하는 위치에 마커 생성 또는 이동
- // 클릭한 Jibun에 해당하는 위치에 마커 생성 또는 이동
- var markerPosition = new kakao.maps.LatLng(foundLocation.lat, foundLocation.lng);
-
- // 디버깅을 위한 로그 추가
- console.log('marker:', marker);
-
- // 기존 마커가 없으면 새로 생성, 있으면 위치만 이동
- if (!marker) {
-     marker = new kakao.maps.Marker({
-         position: markerPosition,
-         map: map
-     });
-
-     // 마커를 클릭했을 때 동작 설정
-     kakao.maps.event.addListener(marker, 'click', function () {
-         // 마커를 클릭했을 때 정보창 열기 등의 동작 수행
-         infowindow.setContent('마커를 클릭했습니다.');
-         infowindow.open(map, marker);
-     });
- } else {
-     // 기존 마커의 위치 변경
-     marker.setPosition(markerPosition);
- }
-
- // 디버깅을 위한 로그 추가
- console.log('marker after update:', marker);
-
- // 지도 이동
- map.panTo(markerPosition);
-
-// 추가적으로 필요한 마커 관련 동작 수행
-// ...
-
-// 정보창 열기 등의 동작 수행
-// ...
-
-    } else {
-        console.log('Location not found for clicked Jibun:', clickedJibun);
-    }
+.map_wrap {
+  border-radius: 25px;
+  position: fixed;
+  left: 4.3%;
+  width: 88%;
+  height: 500px;
+  border: solid #333 ;
+  border-width: 2.5px;
+  z-index: 1;
 }
+/* #container {
+  overflow: hidden;
+  height: 500px;
+  position: relative;
+} */
+/* #mapWrapper {
+  width: 100%;
+  height: 500px;
+  z-index: 1;
+} */
+/* #rvWrapper {
+  width: 50%;
+  height: 300px;
+  position: absolute;
+  top: 60px;
+  left: 25%;
+  z-index: 0;
+} */
 
-
-
-function displayPolygons(location) {
+/* .map_wrap,
+.map_wrap * {
+  margin: 0;
+  padding: 0;
+  font-family: "Malgun Gothic", dotum, "돋움", sans-serif;
+  font-size: 12px;
+} */
+.map_wrap a,
+.map_wrap a:hover,
+.map_wrap a:active {
+  color: #000;
+  text-decoration: none;
+}
+/* .map_wrap {
+  position: relative;
+  width: 900%;
+  height: 500px;
+} */
+/* 
+#menu_wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  margin: 10px 0 30px 10px;
+  padding: 5px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+  font-size: 12px;
+  border-radius: 10px;
+} */
+#addressInfoLink:hover {
+  text-decoration: underline; /* 호버 시 밑줄 표시 */
+  color: rgb(105, 105, 242); /* 호버 시 글자 색 변경 */
+  cursor: pointer; /* 호버 시 커서 모양 변경 */
+}
+.sub_box {
   
-    clearPolygons();
-
-    var polygon = new kakao.maps.Polygon({
-        path: location.polygonPath,
-        strokeWeight: 3,
-        strokeColor: 'red',
-        strokeOpacity: 0.8,
-    });
-
-    polygon.setMap(map);
-    polygons.push(polygon);
+  width: 100%;
+  height: 900px;
+  background-color: rgb(226, 230, 249);
+  position: absolute;
+  display: flex;
+   /* 수평 가운데 정렬 */
+  
+  height: 100vh; /* 뷰포트 높이에 따라 조절 */
+  
+}
+.back{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 900px;
+  background-color:  rgb(233, 236, 245);
+}
+.sub2{
+  font-size: 20px;
+  border-radius: 15px;
+  position: absolute;
+  top: 50px;
+  left: 5%;
+  margin-left: 10px;
+  z-index: 9999;
+  margin-bottom: 30px;
+  width: 180px;
+  height: 25px;
+  background-color: white;
+  text-align: center;
+  border:solid rgb(72, 72, 167);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
 }
 
-function clearPolygons() {
-    polygons.forEach(polygon => polygon.setMap(null));
-    polygons = [];
+
+
+.box {
+  margin-top: 15%;
+  margin-left: 10%;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%; 
+  font-size: 20px;
+  width: 290%;
+  height: 80px;
+  background-color: whitesmoke;
+  margin-bottom: 30px;
+  z-index: 999;
+  cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.box:hover {
+  background-color: #e0e0e0; /* 마우스 호버 시 배경색 변경 */
+  border: 1px solid #333; /* 마우스 호버 시 테두리 추가 및 색상 변경 */
 }
 
-function closeOverlay() {
-    infowindow.close();
-    marker.setMap(null);
-    clearPolygons();
+.title {
+  font-weight: bold;
+  display: block;
 }
-function closeOverlay() {
-    infowindow.close();
-    marker.setMap(null);
+.hAddr {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  border-radius: 2px;
+  background: #fff;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  padding: 5px;
+}
+#centerAddr {
+  display: block;
+  margin-top: 2px;
+  font-weight: normal;
+}
+
+.bAddr {
+  width: 290px;
+  height: 130px;
+  padding: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
 
 }
 
-// overlay.js
+.jibun-address {
+  color: rgba(0, 0, 0, 0.7);
+}
+.doro{
+  font-size: 15px;
+}
+.title {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 18px;
+  font-size: 17px;
+  line-height: 20px;
+}
+
+#addressInfoLink {
+  width: 200px;
+  height: 20px;
+}
+.address-image{
+  width: 20px; 
+  height: 20px; 
+  margin-left: 70px; 
+ 
+  top: 30px;
+  left: 2px;
+  
+}
+.bAddr img {
+  width: 20px;
+  height: 20px;
+  margin-left: 70px;
+  position: absolute;
+  top: 18px;
+  left: 12px;
+  transform: rotate(180deg);
+}
 
 
-//================================================================================================================================
+
+
+.closeBtn {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+}
+
+#searchInput {
+  position: absolute;
+  top: 20px;
+  right: 290px;
+  z-index: 99;
+
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 200px;
+  outline: none;
+}
+button {
+  position: absolute;
+  top: 20px;
+  right: 234px;
+  z-index: 99;
+
+  padding: 10px 15px;
+  background-color: rgb(72, 72, 167);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  
+}
+
+.modal {
+  width: 600px;
+  height: 550px;
+  padding-top: 40px;
+  background-color: lightgrey;
+  position: absolute;
+  
+  left: 30%;
+  height: 90%;
+  top: 2%;
+  z-index: 999;
+  border-radius: 10px;
+  overflow: auto;
+}
+.wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 560px;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); 
+  z-index: 100; 
+}
+.close {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  transform: scale(1.5);
+  color: #fff;
+  z-index: 10000;
+}
+.close::before {
+  content: "";
+  position: absolute;
+  width: 18px; 
+  height: 18px;
+  background-color: black;
+  border-radius: 50%;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1; 
+}
+
+.box1 {
+ border: solid 1px #333;
+  margin-left: 15%;
+  width: 70%;
+  height: 80px;
+  text-align: center;
+  padding-top: 5px;
+  background-color: #fff;
+}
+
+.box2 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 80px;
+  margin-top: 1.5%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 26px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 1.5);
+}
+
+.box3 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 200px;
+  margin-top: 20px;
+  background-color: #fff;
+  line-height: 40px;
+  font-size: 20px;
+  overflow: auto;
+}
+
+
+input[type="checkbox"] {
+  display: none; /* 기본 체크박스 숨기기 */
+}
+
+/* 사용자 정의 체크박스 디자인 */
+input[type="checkbox"] + label {
+  position: relative;
+  padding-left: 50px; /* 체크박스 왼쪽 여백 조절 */
+  cursor: pointer;
+  display: inline-block;
+}
+
+input[type="checkbox"] + label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 25px; /* 체크박스의 너비 조절 */
+  height: 25px; /* 체크박스의 높이 조절 */
+  border: 2px solid #333; /* 체크박스 테두리 스타일 및 색상 */
+  background-color: #fff; /* 체크박스 배경색 */
+  border-radius: 45px; /* 체크박스를 둥글게 만듦 */
+}
+
+input[type="checkbox"]:checked + label::before {
+  background-color: #66bb6a; /* 체크된 상태일 때의 배경색 */
+}
+
+.Detail01,
+.Detail02,
+.Detail03 {
+  padding: 40px;
+}
+
+.Detail01::before,
+.Detail02::before,
+.Detail03::before {
+  content: attr(data-hosu); 
+  background: beige;
+  text-align: center;
+  border-radius: 30px;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.rac {
+  background-color: #fff;
+  width: 50px;
+  height: 40px;
+}
+.hosu-button {
+  position: relative;
+  top: 80px;
+}
+
+.box4 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 200px;
+  margin-top: 30px;
+  background-color: #fff;
+  line-height: 40px;
+  font-size: 20px;
+  overflow: auto;
+}
+
+.box5 {
+  border-radius: 15px;
+  margin-left: 10%;
+  width: 80%;
+  height: 200px;
+  margin-top: 30px;
+  margin-bottom: 40px;
+  background-color: #fff;
+  line-height: 40px;
+  font-size: 20px;
+  overflow: auto;
+}

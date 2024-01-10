@@ -1,15 +1,18 @@
 // 이미지 마커 아이콘 설정
 var markerImage = new kakao.maps.MarkerImage(
-  '../아파트.jpg', 
+  "../아파트.jpg",
   new kakao.maps.Size(20, 20),
-  { offset: new kakao.maps.Point(1, 1) } 
+  { offset: new kakao.maps.Point(1, 1) }
 );
 
-
 var aptInfos = [
-  { name: '천안백석3차아이파크', lat: 36.8286524, lng: 127.1252861, address: '101동' },  
-  { name: '102', lat: 37.4567, lng: 126.7890, address: '동수2 지번 주소' },
-
+  {
+    name: "천안백석3차아이파크",
+    lat: 36.8286524,
+    lng: 127.1252861,
+    address: "101동",
+  },
+  { name: "102", lat: 37.4567, lng: 126.789, address: "동수2 지번 주소" },
 ];
 var selectedJibun = null;
 
@@ -19,16 +22,23 @@ aptInfos.forEach(function (info) {
     position: new kakao.maps.LatLng(info.lat, info.lng),
     map: map,
     title: info.name,
-    image: markerImage 
+    image: markerImage,
   });
 
- 
-  kakao.maps.event.addListener(marker, 'click', function () {
+  kakao.maps.event.addListener(marker, "click", function () {
     selectedJibun = info.address;
 
     var infowindow = new kakao.maps.InfoWindow({
-      content: '<div onclick="openModal(\'' + info.address + '\', \'' + info.name + '\')"> ' + info.name + ' ' + info.address,
-      removable: true
+      content:
+        "<div onclick=\"openModal('" +
+        info.address +
+        "', '" +
+        info.name +
+        "')\"> " +
+        info.name +
+        " " +
+        info.address,
+      removable: true,
     });
 
     infowindow.open(map, marker);
@@ -89,26 +99,31 @@ async function openModal(jibunAddress, hosuDetails) {
 
     var matchingRows = findRowsByJibun(data, jibunAddress);
 
-   
-if (matchingRows.length > 0) {
-  console.log(jibunAddress + "에 대한 상세 정보:");
+    if (matchingRows.length > 0) {
+      console.log(jibunAddress + "에 대한 상세 정보:");
 
-  if (matchingRows.length > 0) {
-    modalContainer.querySelector(".Name01").innerHTML =
-      " " + matchingRows[0][2] + "<br>";
+      if (matchingRows.length > 0) {
+        modalContainer.querySelector(".Name01").innerHTML =
+          "건물명 : " + matchingRows[0][2] + "<br>";
 
-    var hosuGroups = groupByHosu(matchingRows);
+        var hosuGroups = groupByHosu(matchingRows);
+        var clickCount = 0;
+        var lastClickedCheckbox = null;
 
-    for (var i = 0; i < hosuGroups.length; i++) {
-      var currentHosu = hosuGroups[i][0][3];
+        for (var i = 0; i < hosuGroups.length; i++) {
+          var currentHosu = hosuGroups[i][0][3];
 
-      var detailContainer = modalContainer.querySelector(`.Detail0${i + 1}`);
-      detailContainer.innerHTML = "";
+          var detailContainer = modalContainer.querySelector(
+            `.Detail0${i + 1}`
+          );
+          detailContainer.innerHTML = "";
 
-      if (currentHosu) {
-        detailContainer.setAttribute("data-hosu", currentHosu);
-      }
+          if (currentHosu) {
+            detailContainer.setAttribute("data-hosu", currentHosu);
+          }
 
+          
+      // 체크박스와 라벨 생성
       for (var j = 0; j < hosuGroups[i].length; j++) {
         var checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -117,9 +132,14 @@ if (matchingRows.length > 0) {
 
         var label = document.createElement("label");
         label.htmlFor = `checkbox${i}_${j}`;
-        label.appendChild(document.createTextNode(" " + hosuGroups[i][j][1]));
+        label.appendChild(
+          document.createTextNode(" " + hosuGroups[i][j][1])
+        );
 
-       
+     
+        document.body.appendChild(checkbox);
+        document.body.appendChild(label);
+
         var dateElement = document.createElement("span");
         dateElement.style.marginLeft = "10px";
 
@@ -150,17 +170,15 @@ if (matchingRows.length > 0) {
       }
     }
   }
-}
-
-    else {
+    } else {
       console.log("해당 Jibun에 대한 데이터를 찾을 수 없습니다.");
     }
-    if (!modalContainer.querySelector('.Detail02').textContent.trim()) {
-      modalContainer.querySelector('.box4').style.display = 'none';
+    if (!modalContainer.querySelector(".Detail02").textContent.trim()) {
+      modalContainer.querySelector(".box4").style.display = "none";
     }
 
-    if (!modalContainer.querySelector('.Detail03').textContent.trim()) {
-      modalContainer.querySelector('.box5').style.display = 'none';
+    if (!modalContainer.querySelector(".Detail03").textContent.trim()) {
+      modalContainer.querySelector(".box5").style.display = "none";
     }
   } catch (error) {
     console.error("CSV 파일을 읽어오는 중 오류가 발생했습니다:", error);
@@ -181,12 +199,11 @@ function groupByHosu(rows) {
 }
 //================================================================================================
 
-
 function closeModal() {
   var modalContainer = document.querySelector(".modal-container");
   if (modalContainer) {
     modalContainer.parentNode.removeChild(modalContainer);
-    selectedJibun = null; 
+    selectedJibun = null;
   }
 }
 function readCSV(filePath) {
@@ -230,7 +247,6 @@ function findRowsByJibun(data, jibun) {
   return matchingRows;
 }
 
-
 function readCSV(filePath) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
@@ -276,10 +292,9 @@ function closeModal() {
   var modalContainer = document.querySelector(".modal-container");
   if (modalContainer) {
     modalContainer.parentNode.removeChild(modalContainer);
-    selectedJibun = null; 
+    selectedJibun = null;
   }
 }
-
 
 function readCSV(filePath) {
   return new Promise((resolve, reject) => {
